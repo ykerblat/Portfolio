@@ -1,2 +1,2 @@
-Yann's Kerblat Visual Portfolio Website - June 2022
+Yann's Kerblat Visual Portfolio Website - July 2022 (under construction)
 For more information - ykerblat@gmail.com 
