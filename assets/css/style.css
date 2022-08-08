@@ -9,7 +9,8 @@
 # General
 --------------------------------------------------------------*/
 body {
-  font-family: "Inconsolata", monospace;
+  /* font-family: "Inconsolata", monospace; */
+  font-family: "Raleway", monospace;
   color: #0d1e2d;
 }
 
@@ -19,7 +20,7 @@ a {
 }
 
 a:hover {
-  color: blue;
+  color: rgb(156, 9, 170);
 }
 
 h1,
@@ -29,7 +30,9 @@ h4,
 h5,
 h6,
 .font-heading {
-  font-family: "Raleway", sans-serif;
+  /* font-family: "Raleway", sans-serif; */
+  font-family: "Helvetica", sans-serif;
+
 }
 
 .section {
@@ -406,6 +409,11 @@ h6,
 
 .custom-navbar .navbar-brand {
   font-size: 1.7rem;
+}
+
+.custom-navbar .navbar-brand :hover {
+  text-decoration: underline;
+  color: blue;
 }
 
 /* Burger */
