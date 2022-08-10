@@ -34,6 +34,10 @@
     }
   }
 
+  // $('#myCarousel').on('slide.bs.carousel', function () {
+  //   // do something…
+  // })
+
   /**
    * Easy on scroll event listener 
    */
@@ -96,6 +100,7 @@
       clickable: true
     }
   });
+  
 
   /**
    * Animation on scroll
@@ -110,3 +115,6 @@
   });
 
 })()
+
+
+/** Slideshow testing */
