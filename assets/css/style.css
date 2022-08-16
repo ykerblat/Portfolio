@@ -543,3 +543,21 @@ h6,
   font-size: 55px;
   color: red;
 }
+
+/* .carousel-indicators
+{
+      background-color: whitesmoke !important;
+} */
+.carousel-indicators .active {
+    background-color: red !important;
+}
+
+.carousel-indicators {
+  background-color: darkgrey !important;
+}
+
+.blog-link :hover {
+  font-size: 1.1rem;
+  text-decoration: underline;
+  color: red;
+}
