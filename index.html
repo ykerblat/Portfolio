@@ -49,7 +49,7 @@
           <h3>Our Philosophy</h3>
           <p>A contour line is how cartographers make the invisible visible — turning elevation into something the eye can read at a glance. We bring that same instinct to data: behind every number is a landscape of trade-offs, risks, and human consequence, and our work is to give that landscape a shape people can see, understand, and act on. Design, to us, isn&rsquo;t decoration for evidence — it&rsquo;s what gives evidence enough clarity that it can&rsquo;t be ignored.
             <br> <br> 
-            Contact: <strong><a href="mailto:ykerblat@gmail.com">ykerblat@gmail.com</a></strong></p>
+            Contact: <strong><a href="mailto:yann@contourlines.studio">yann@contourlines.studio</a></strong></p>
         </div>
       </div>
 
@@ -76,7 +76,7 @@
               Contour Lines partners with climate adaptation institutions, research centers and foundations, and mission-driven companies to transform high-stakes data into visual narratives that move people to act.</p>
             <p class="mt-3">
               <a href="#portfolio-grid" class="readmore">View Our Work</a>
-              <a href="mailto:ykerblat@gmail.com" class="readmore">Start a Project</a>
+              <a href="#contact" class="readmore">Start a Project</a>
             </p>
           </div>
           <div class="col-md-12 col-lg-6 text-start text-lg-end" data-aos="fade-up" data-aos-delay="100">
@@ -274,13 +274,84 @@
       </div>
     </section>
 
-    <section class="section pt-0">
-      <div class="container text-center">
-        <h3 class="h3 mb-2">Have a data communication challenge?</h3>
-        <p class="mb-4">Let&rsquo;s give it shape.</p>
-        <a href="mailto:ykerblat@gmail.com" class="readmore">Start a Project</a>
+    <section class="section pt-0" id="contact">
+      <div class="container">
+        <div class="row justify-content-center text-center mb-4">
+          <div class="col-md-8">
+            <h3 class="h3 mb-2">Have a data communication challenge?</h3>
+            <p class="mb-4">Let&rsquo;s give it shape. Send a few details and we&rsquo;ll get back to you.</p>
+          </div>
+        </div>
+        <div class="row justify-content-center">
+          <div class="col-md-6">
+            <form id="contact-form" action="https://formspree.io/f/mrevnaez" method="POST">
+              <div class="row gy-3">
+                <div class="col-12">
+                  <input type="text" name="name" class="form-control" placeholder="Your name" required>
+                </div>
+                <div class="col-12">
+                  <input type="email" name="email" class="form-control" placeholder="Your email" required>
+                </div>
+                <div class="col-12">
+                  <input type="text" name="subject" class="form-control" placeholder="Subject" required>
+                </div>
+                <div class="col-12">
+                  <textarea name="message" rows="5" class="form-control" placeholder="Tell us about the project" required></textarea>
+                </div>
+                <div class="col-12 text-center mt-3">
+                  <button type="submit" class="readmore" style="border:1px solid #000; background:none; cursor:pointer;">Send Message</button>
+                  &nbsp;&nbsp;
+                  <a href="mailto:yann@contourlines.studio" class="readmore">Or Email Directly</a>
+                </div>
+              </div>
+              <div id="form-status" class="text-center" style="display:none;"></div>
+            </form>
+          </div>
+        </div>
       </div>
     </section>
+
+    <script>
+      (function () {
+        var form = document.getElementById('contact-form');
+        if (!form) return;
+        var status = document.getElementById('form-status');
+        var btn = form.querySelector('button[type="submit"]');
+
+        form.addEventListener('submit', function (e) {
+          e.preventDefault();
+          btn.disabled = true;
+          btn.textContent = 'Sending…';
+
+          fetch(form.action, {
+            method: 'POST',
+            body: new FormData(form),
+            headers: { Accept: 'application/json' }
+          })
+            .then(function (response) {
+              if (response.ok) {
+                form.querySelectorAll('.row.gy-3 > div').forEach(function (el) {
+                  el.style.display = 'none';
+                });
+                status.style.display = 'block';
+                status.innerHTML =
+                  '<h4 class="h4 mb-2">Thanks for reaching out.</h4>' +
+                  '<p>Your message has landed safely &mdash; we&rsquo;ll get back to you shortly.</p>';
+              } else {
+                throw new Error('Submission failed');
+              }
+            })
+            .catch(function () {
+              status.style.display = 'block';
+              status.style.color = '#b00020';
+              status.innerHTML =
+                '<p>Something went wrong sending that. Mind trying again, or emailing <a href="mailto:yann@contourlines.studio">yann@contourlines.studio</a> directly?</p>';
+              btn.disabled = false;
+              btn.textContent = 'Send Message';
+            });
+        });
+      })();
+    </script>
 
   <footer class="footer" role="contentinfo">
     <div class="container">
@@ -289,7 +360,7 @@
           <p class="mb-1">&copy; Contour Lines | Yann Kerblat | 2026 <br> All Rights Reserved</p>
         </div>
         <div class="col-sm-6 social text-md-end">
-          <a href="mailto:ykerblat@gmail.com"><span class="bi bi-envelope"></span></a>
+          <a href="mailto:yann@contourlines.studio"><span class="bi bi-envelope"></span></a>
           <a href="https://www.linkedin.com/in/yann-kerblat-93282919/"><span class="bi bi-linkedin"></span></a>
           <a href="https://github.com/ykerblat"><span class="bi bi-github"></span></a>
           <a href="https://blogs.worldbank.org/team/yann-kerblat"><span class="bi bi-pencil"></span></a>
