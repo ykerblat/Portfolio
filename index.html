@@ -61,6 +61,7 @@
 
     /* --- semantic tokens: LIGHT (default, no JS required) --- */
     --color-surface:            var(--p-neutral-100);
+    --color-surface-rgb:        237,234,226;
     --color-surface-raised:     var(--p-neutral-150);
     --color-surface-sunken:     var(--p-neutral-50);
     --color-text-primary:       var(--p-neutral-900);
@@ -99,6 +100,7 @@
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
       --color-surface:            var(--p-neutral-900);
+      --color-surface-rgb:        13,14,11;
       --color-surface-raised:     var(--p-neutral-850);
       --color-surface-sunken:     #121310;
       --color-text-primary:       var(--p-neutral-100);
@@ -119,6 +121,7 @@
   /* --- DARK via explicit user toggle (overrides system pref either way) --- */
   [data-theme="dark"]{
     --color-surface:            var(--p-neutral-900);
+    --color-surface-rgb:        13,14,11;
     --color-surface-raised:     var(--p-neutral-850);
     --color-surface-sunken:     #121310;
     --color-text-primary:       var(--p-neutral-100);
@@ -245,6 +248,11 @@
   .divider{ width:100%; height:24px; display:block; }
   .divider path{ fill:var(--p-brass-400); opacity:0.32; }
 
+  /* a deliberate neutral beat between two saturated full-bleed blocks
+     (teal stats -> gold pullquote) so they don't collide directly */
+  .section-breath{ background:var(--color-surface); padding:34px 0; }
+  .section-breath .divider{ max-width:1100px; margin:0 auto; }
+
   /* services */
   .services{ padding:120px 0; }
   .services h2{
@@ -291,7 +299,7 @@
   }
 
   /* work sample */
-  .work{ padding:120px 0; }
+  .work{ padding:120px 0 64px; }
   .work h2{ font-family:var(--font-display); font-size:40px; font-weight:400; margin:0 0 32px; }
   .carousel{
     display:flex; align-items:stretch; gap:24px; overflow-x:auto; overflow-y:visible;
@@ -399,7 +407,7 @@
   /* contact form */
   .contact{ padding:0 0 88px; }
   .contact-grid{
-    display:grid; grid-template-columns:1.1fr 0.9fr; gap:88px; align-items:stretch;
+    display:grid; grid-template-columns:1.1fr 0.9fr; gap:88px; align-items:start;
   }
   .contact-box{
     background:var(--color-surface-sunken); border:1px solid var(--color-border-subtle);
@@ -501,7 +509,10 @@
   /* theme toggle */
   .theme-toggle{
     position:fixed; bottom:16px; right:16px; z-index:52; width:34px; height:34px;
-    border:1px solid var(--line-strong); background:var(--paper); color:var(--ink);
+    border:1px solid var(--color-border-subtle); color:var(--ink);
+    background:rgba(var(--color-surface-rgb), 0.75);
+    -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px);
+    box-shadow:0 4px 20px rgba(0,0,0,0.08);
     border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center;
     font-family:var(--font-mono); font-size:13px; transition:transform 0.1s ease, border-color 0.15s ease;
   }
@@ -510,7 +521,7 @@
   .theme-toggle:focus-visible{ outline:2px solid var(--color-focus-ring); outline-offset:2px; }
 
   /* studio / philosophy */
-  .studio{ padding:120px 0; }
+  .studio{ padding:120px 0 84px; }
   .studio-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:40px; }
   .studio-grid h3{ font-family:var(--font-display); font-size:27px; font-weight:400; margin:0 0 16px; }
   .studio-grid p{ font-size:17px; line-height:1.65; color:var(--color-text-secondary); }
@@ -590,8 +601,11 @@
     .nav-toggle{
       position:fixed; top:16px; right:16px; z-index:50;
       display:flex; align-items:center; justify-content:center;
-      width:48px; height:48px; border:1px solid var(--line-strong); background:var(--paper);
-      cursor:pointer; flex-direction:column; gap:4px;
+      width:48px; height:48px; border:1px solid var(--color-border-subtle);
+      background:rgba(var(--color-surface-rgb), 0.75);
+      -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px);
+      box-shadow:0 4px 20px rgba(0,0,0,0.08);
+      cursor:pointer; flex-direction:column; gap:4px; border-radius:10px;
       transition:border-color 0.2s ease, background 0.2s ease;
     }
     .nav-toggle span{
@@ -695,7 +709,26 @@
   }
   .noise-hero-subtitle em{ font-style:italic; font-weight:400; color:var(--nh-gold); }
 
+  .noise-hero-cta-row{ display:flex; align-items:center; gap:24px; flex-wrap:wrap; }
+  .noise-hero-cta{
+    font-family:var(--font-mono); font-weight:600; font-size:13px; letter-spacing:0.05em; text-transform:uppercase;
+    background:#C9683C; color:#FBF4EE; padding:14px 26px; border-radius:9px;
+    text-decoration:none; border:1px solid #C9683C;
+    transition:transform 0.1s ease, opacity 0.15s ease; display:inline-block;
+  }
+  .noise-hero-cta:hover{ opacity:0.92; }
+  .noise-hero-cta:active{ transform:scale(0.96); }
+  .noise-hero-cta:focus-visible{ outline:2px solid var(--nh-gold); outline-offset:2px; }
+  .noise-hero-cta-quiet{
+    font-family:var(--font-mono); font-size:13px; letter-spacing:0.04em;
+    color:var(--nh-text-secondary); text-decoration:none; border-bottom:1px solid transparent;
+    transition:color 0.15s ease, border-color 0.15s ease;
+  }
+  .noise-hero-cta-quiet:hover{ color:var(--nh-text); border-color:var(--nh-border); }
+  .noise-hero-cta-quiet:focus-visible{ outline:2px solid var(--nh-gold); outline-offset:2px; }
+
   @media (max-width: 768px){
+    .regmark{ display:none; }
     .noise-hero-toggle{
       display:flex; flex-direction:column; justify-content:center; align-items:center; gap:5px;
       position:fixed; top:16px; right:16px; width:48px; height:48px; z-index:50;
@@ -847,6 +880,10 @@
         <span class="bd">Studio</span>
       </h1>
       <p class="noise-hero-subtitle">Give your data <em>some</em> elevation.</p>
+      <div class="noise-hero-cta-row">
+        <a href="#contact" class="noise-hero-cta">Schedule a Conversation</a>
+        <a href="#work" class="noise-hero-cta-quiet">View our work &darr;</a>
+      </div>
     </div>
   </section>
 
@@ -892,6 +929,23 @@
   <svg class="divider" aria-hidden="true" viewBox="0 0 1100 36" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M 0.0 15.0 L 11.0 16.5 L 22.0 17.9 L 33.0 19.1 L 44.0 20.1 L 55.0 20.7 L 66.0 21.0 L 77.0 20.9 L 88.0 20.4 L 99.0 19.6 L 110.0 18.5 L 121.0 17.2 L 132.0 15.8 L 143.0 14.2 L 154.0 12.8 L 165.0 11.5 L 176.0 10.4 L 187.0 9.6 L 198.0 9.1 L 209.0 9.0 L 220.0 9.3 L 231.0 9.9 L 242.0 10.9 L 253.0 12.1 L 264.0 13.5 L 275.0 15.0 L 286.0 16.5 L 297.0 17.9 L 308.0 19.1 L 319.0 20.1 L 330.0 20.7 L 341.0 21.0 L 352.0 20.9 L 363.0 20.4 L 374.0 19.6 L 385.0 18.5 L 396.0 17.2 L 407.0 15.8 L 418.0 14.2 L 429.0 12.8 L 440.0 11.5 L 451.0 10.4 L 462.0 9.6 L 473.0 9.1 L 484.0 9.0 L 495.0 9.3 L 506.0 9.9 L 517.0 10.9 L 528.0 12.1 L 539.0 13.5 L 550.0 15.0 L 561.0 16.5 L 572.0 17.9 L 583.0 19.1 L 594.0 20.1 L 605.0 20.7 L 616.0 21.0 L 627.0 20.9 L 638.0 20.4 L 649.0 19.6 L 660.0 18.5 L 671.0 17.2 L 682.0 15.8 L 693.0 14.2 L 704.0 12.8 L 715.0 11.5 L 726.0 10.4 L 737.0 9.6 L 748.0 9.1 L 759.0 9.0 L 770.0 9.3 L 781.0 9.9 L 792.0 10.9 L 803.0 12.1 L 814.0 13.5 L 825.0 15.0 L 836.0 16.5 L 847.0 17.9 L 858.0 19.1 L 869.0 20.1 L 880.0 20.7 L 891.0 21.0 L 902.0 20.9 L 913.0 20.4 L 924.0 19.6 L 935.0 18.5 L 946.0 17.2 L 957.0 15.8 L 968.0 14.2 L 979.0 12.8 L 990.0 11.5 L 1001.0 10.4 L 1012.0 9.6 L 1023.0 9.1 L 1034.0 9.0 L 1045.0 9.3 L 1056.0 9.9 L 1067.0 10.9 L 1078.0 12.1 L 1089.0 13.5 L 1100.0 15.0 L 1100.0 18.0 L 1089.0 16.5 L 1078.0 15.1 L 1067.0 13.9 L 1056.0 12.9 L 1045.0 12.3 L 1034.0 12.0 L 1023.0 12.1 L 1012.0 12.6 L 1001.0 13.4 L 990.0 14.5 L 979.0 15.8 L 968.0 17.2 L 957.0 18.8 L 946.0 20.2 L 935.0 21.5 L 924.0 22.6 L 913.0 23.4 L 902.0 23.9 L 891.0 24.0 L 880.0 23.7 L 869.0 23.1 L 858.0 22.1 L 847.0 20.9 L 836.0 19.5 L 825.0 18.0 L 814.0 16.5 L 803.0 15.1 L 792.0 13.9 L 781.0 12.9 L 770.0 12.3 L 759.0 12.0 L 748.0 12.1 L 737.0 12.6 L 726.0 13.4 L 715.0 14.5 L 704.0 15.8 L 693.0 17.2 L 682.0 18.8 L 671.0 20.2 L 660.0 21.5 L 649.0 22.6 L 638.0 23.4 L 627.0 23.9 L 616.0 24.0 L 605.0 23.7 L 594.0 23.1 L 583.0 22.1 L 572.0 20.9 L 561.0 19.5 L 550.0 18.0 L 539.0 16.5 L 528.0 15.1 L 517.0 13.9 L 506.0 12.9 L 495.0 12.3 L 484.0 12.0 L 473.0 12.1 L 462.0 12.6 L 451.0 13.4 L 440.0 14.5 L 429.0 15.8 L 418.0 17.2 L 407.0 18.8 L 396.0 20.2 L 385.0 21.5 L 374.0 22.6 L 363.0 23.4 L 352.0 23.9 L 341.0 24.0 L 330.0 23.7 L 319.0 23.1 L 308.0 22.1 L 297.0 20.9 L 286.0 19.5 L 275.0 18.0 L 264.0 16.5 L 253.0 15.1 L 242.0 13.9 L 231.0 12.9 L 220.0 12.3 L 209.0 12.0 L 198.0 12.1 L 187.0 12.6 L 176.0 13.4 L 165.0 14.5 L 154.0 15.8 L 143.0 17.2 L 132.0 18.8 L 121.0 20.2 L 110.0 21.5 L 99.0 22.6 L 88.0 23.4 L 77.0 23.9 L 66.0 24.0 L 55.0 23.7 L 44.0 23.1 L 33.0 22.1 L 22.0 20.9 L 11.0 19.5 L 0.0 18.0 Z"/>
   </svg>
+
+  <section class="clients">
+    <div class="wrap">
+      <p>Trusted by</p>
+      <div class="client-strip">
+        <div class="client-logo">World Bank Group</div>
+        <div class="client-logo">GFDRR</div>
+        <div class="client-logo">IOM</div>
+        <div class="client-logo">Camber Collective</div>
+        <div class="client-logo">Dēmos</div>
+        <div class="client-logo">Gates Foundation</div>
+        <div class="client-logo">Smithsonian</div>
+        <div class="client-logo">Global Rights Compliance</div>
+        <div class="client-logo">BDO LLC</div>
+      </div>
+    </div>
+  </section>
 
   <section class="work" id="work">
     <div class="wrap">
@@ -1115,27 +1169,16 @@
     </div>
   </section>
 
+  <div class="section-breath" aria-hidden="true">
+    <svg class="divider" viewBox="0 0 1100 36" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,18 C 90,4 180,32 270,18 C 360,4 450,32 540,18 C 630,4 720,32 810,18 C 900,4 990,32 1100,18 L 1100,21 C 990,35 900,7 810,21 C 720,35 630,7 540,21 C 450,35 360,7 270,21 C 180,35 90,7 0,21 Z"/>
+    </svg>
+  </div>
+
   <section class="pullquote">
     <div class="wrap">
       <blockquote>Design isn&rsquo;t decoration for evidence. It&rsquo;s what gives evidence enough clarity that it can&rsquo;t be ignored.</blockquote>
       <cite>— The studio philosophy</cite>
-    </div>
-  </section>
-
-  <section class="clients">
-    <div class="wrap">
-      <p>Trusted by</p>
-      <div class="client-strip">
-        <div class="client-logo">World Bank Group</div>
-        <div class="client-logo">GFDRR</div>
-        <div class="client-logo">IOM</div>
-        <div class="client-logo">Camber Collective</div>
-        <div class="client-logo">Dēmos</div>
-        <div class="client-logo">Gates Foundation</div>
-        <div class="client-logo">Smithsonian</div>
-        <div class="client-logo">Global Rights Compliance</div>
-        <div class="client-logo">BDO LLC</div>
-      </div>
     </div>
   </section>
 
@@ -1295,9 +1338,9 @@
 
         for (var level = 0; level < LEVELS; level++){
           var L = (level + 0.5) / LEVELS;
-          var op = 0.03 + (0.14 - 0.03) * (level / (LEVELS - 1));
+          var op = 0.16 + (0.62 - 0.16) * (level / (LEVELS - 1));
           ctx.strokeStyle = 'rgba(' + GOLD_RGB + ',' + op.toFixed(3) + ')';
-          ctx.lineWidth = 1;
+          ctx.lineWidth = 1.4;
           ctx.beginPath();
           marchLevel(L);
           ctx.stroke();
