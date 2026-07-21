@@ -271,6 +271,36 @@
   }
   .card:focus-within{ outline:2px solid var(--slate); outline-offset:-2px; }
 
+  /* ── card cinema: rapid-cycling visual frames revealed on hover ── */
+  .card-cinema{
+    position:absolute; inset:0; z-index:0; opacity:0; pointer-events:none;
+    transition:opacity 0.35s ease;
+  }
+  .card:hover .card-cinema,
+  .card:focus-within .card-cinema,
+  .card.cinema-on .card-cinema{ opacity:1; }
+  .cinema-frame{
+    position:absolute; inset:0; opacity:0; transition:opacity 0.22s ease;
+  }
+  .cinema-frame.active{ opacity:1; }
+  .cinema-frame svg{ position:absolute; inset:0; width:100%; height:100%; }
+  .cinema-frame img{
+    position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block;
+  }
+  .cinema-scrim{
+    position:absolute; inset:0;
+    background:linear-gradient(180deg,
+      rgba(var(--color-surface-rgb), 0.68) 0%,
+      rgba(var(--color-surface-rgb), 0.55) 55%,
+      rgba(var(--color-surface-rgb), 0.80) 100%);
+  }
+  /* keep text and tags above the cinema layer */
+  .card > *:not(.card-cinema){ position:relative; z-index:1; }
+  @media (prefers-reduced-motion: reduce){
+    .card-cinema{ transition:none; }
+    .cinema-frame{ transition:none; }
+  }
+
   .summit{ position:relative; width:8px; height:8px; margin-bottom:18px; }
   .summit i{ position:absolute; inset:0; border-radius:50%; background:var(--contour); display:block; }
   .summit b{
@@ -582,18 +612,19 @@
   /* how we work */
   .process{ padding:0 0 80px; }
   .process h2{ font-family:var(--font-display); font-size:40px; font-weight:400; margin:0 0 44px; }
-  .process-row{ display:grid; grid-template-columns:repeat(4, 1fr); gap:0; position:relative; }
-  .process-row::before{
-    content:''; position:absolute; left:0; right:0; top:13px; height:1px; background:var(--line);
+  .process-row{ display:grid; grid-template-columns:repeat(4, 1fr); gap:1px; background:var(--line); border:1px solid var(--line); position:relative; }
+  .process-step{
+    position:relative; overflow:hidden; background:var(--paper); padding:28px 24px 26px;
+    border:1px solid transparent; transition:border-color 0.2s ease, background 0.25s ease;
   }
-  .process-step{ position:relative; padding-right:20px; }
+  .process-step:hover, .process-step:focus-within{ background:var(--paper-deep); border-color:var(--contour); }
   .process-step .num{
     position:relative; z-index:1; display:inline-flex; align-items:center; justify-content:center;
     width:26px; height:26px; border-radius:50%; background:var(--paper); border:1px solid var(--contour);
     font-family:var(--font-mono); font-size:11px; color:var(--contour); margin-bottom:16px;
   }
-  .process-step h4{ font-family:var(--font-display); font-size:22px; font-weight:400; margin:0 0 10px; }
-  .process-step p{ font-size:16px; line-height:1.55; color:var(--color-text-secondary); margin:0; }
+  .process-step h4{ position:relative; z-index:1; font-family:var(--font-display); font-size:22px; font-weight:400; margin:0 0 10px; }
+  .process-step p{ position:relative; z-index:1; font-size:16px; line-height:1.55; color:var(--color-text-secondary); margin:0; }
 
   /* stats band */
   .stats{ padding:88px 0; background:var(--color-surface); margin:0; }
@@ -638,8 +669,7 @@
 
     .work-item{ flex:0 0 220px; }
     .studio-grid{ grid-template-columns:1fr; gap:32px; }
-    .process-row{ grid-template-columns:1fr 1fr; row-gap:32px; }
-    .process-row::before{ display:none; }
+    .process-row{ grid-template-columns:1fr 1fr; gap:1px; }
 
     /* 48px minimum touch targets */
     .theme-toggle{ width:48px; height:48px; bottom:14px; right:14px; }
@@ -1079,7 +1109,7 @@
       <div class="carousel" id="work-carousel">
         <a href="#" class="work-item" data-case="sao-tome">
           <div class="work-thumb">
-            <img class="thumb-img" src="img/work/sao-tome.png" alt="" loading="lazy" onerror="this.remove();">
+            <img class="thumb-img" src="img/work/sao-tome.jpg" alt="" loading="lazy" onerror="this.remove();">
             <div class="work-summit" aria-hidden="true"><i></i><b class="r1"></b><b class="r2"></b></div>
             <svg viewBox="0 0 100 75" class="thumb-art" aria-hidden="true" preserveAspectRatio="none">
             <path d="M50 12 C 68 14, 80 26, 78 40 C 76 56, 60 65, 44 63 C 28 61, 18 48, 22 34 C 25 22, 36 11, 50 12 Z" fill="none" stroke="var(--contour)" stroke-width="1.1" opacity="0.8"/>
@@ -1201,24 +1231,96 @@
       <p class="lede">Every engagement starts with one question: what does your audience need to walk away knowing? The format follows from there. <span style="color:var(--slate)">(hover a card)</span></p>
       <div class="grid">
         <div class="card" tabindex="0">
+        <div class="card-cinema" aria-hidden="true">
+          <div class="cinema-frame active">
+            <!-- Suggested real photo: typeset-archive -->
+            <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect x="60" y="70" width="280" height="6" fill="var(--contour)" opacity="0.5"/><rect x="60" y="90" width="260" height="6" fill="var(--contour)" opacity="0.4"/><rect x="60" y="110" width="270" height="6" fill="var(--contour)" opacity="0.4"/><rect x="60" y="140" width="220" height="6" fill="var(--p-teal-300)" opacity="0.5"/><rect x="60" y="160" width="280" height="6" fill="var(--p-teal-300)" opacity="0.4"/><rect x="60" y="180" width="250" height="6" fill="var(--p-teal-300)" opacity="0.4"/><rect x="60" y="210" width="180" height="6" fill="var(--flag)" opacity="0.5"/><rect x="60" y="230" width="270" height="6" fill="var(--flag)" opacity="0.4"/></svg>
+            <img src="img/services/data-stories-1.jpg" alt="" loading="lazy" onerror="this.remove();">
+          </div>
+          <div class="cinema-frame">
+            <!-- Suggested real photo: map-annotation -->
+            <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><path d="M60 120 C 100 90, 160 100, 190 130 C 230 110, 280 130, 320 100 C 340 160, 300 200, 260 190 C 220 220, 160 210, 130 180 C 90 190, 60 160, 60 120 Z" fill="none" stroke="var(--contour)" stroke-width="2" opacity="0.55"/><circle cx="180" cy="140" r="8" fill="none" stroke="var(--flag)" stroke-width="2.5" opacity="0.85"/><path d="M188 133 C 220 110, 240 95, 260 80" stroke="var(--flag)" stroke-width="1.5" stroke-dasharray="2 4" opacity="0.7" fill="none"/><rect x="255" y="60" width="70" height="20" rx="3" fill="none" stroke="var(--flag)" stroke-width="1.5" opacity="0.6"/></svg>
+            <img src="img/services/data-stories-2.jpg" alt="" loading="lazy" onerror="this.remove();">
+          </div>
+          <div class="cinema-frame">
+            <!-- Suggested real photo: drone-crowd -->
+            <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><circle cx="123" cy="191" r="4.7" fill="var(--contour)" opacity="0.69"/><circle cx="99" cy="91" r="3.4" fill="var(--p-teal-300)" opacity="0.44"/><circle cx="275" cy="69" r="4.3" fill="var(--flag)" opacity="0.44"/><circle cx="134" cy="135" r="5.1" fill="var(--contour)" opacity="0.59"/><circle cx="45" cy="101" r="3.4" fill="var(--p-teal-300)" opacity="0.70"/><circle cx="299" cy="217" r="5.1" fill="var(--flag)" opacity="0.65"/><circle cx="344" cy="215" r="3.6" fill="var(--contour)" opacity="0.69"/><circle cx="196" cy="206" r="4.4" fill="var(--p-teal-300)" opacity="0.52"/><circle cx="157" cy="135" r="3.8" fill="var(--flag)" opacity="0.40"/><circle cx="302" cy="216" r="5.5" fill="var(--contour)" opacity="0.63"/><circle cx="217" cy="205" r="3.3" fill="var(--p-teal-300)" opacity="0.62"/><circle cx="182" cy="79" r="3.5" fill="var(--flag)" opacity="0.56"/><circle cx="121" cy="141" r="4.5" fill="var(--contour)" opacity="0.51"/><circle cx="82" cy="148" r="3.6" fill="var(--p-teal-300)" opacity="0.44"/><circle cx="102" cy="121" r="3.2" fill="var(--flag)" opacity="0.61"/><circle cx="345" cy="126" r="4.8" fill="var(--contour)" opacity="0.72"/><circle cx="54" cy="71" r="5.0" fill="var(--p-teal-300)" opacity="0.69"/><circle cx="244" cy="75" r="4.0" fill="var(--flag)" opacity="0.70"/><circle cx="324" cy="217" r="3.5" fill="var(--contour)" opacity="0.69"/><circle cx="160" cy="198" r="3.3" fill="var(--p-teal-300)" opacity="0.74"/><circle cx="233" cy="199" r="3.5" fill="var(--flag)" opacity="0.60"/><circle cx="226" cy="170" r="3.9" fill="var(--contour)" opacity="0.64"/><circle cx="149" cy="105" r="3.4" fill="var(--p-teal-300)" opacity="0.62"/><circle cx="76" cy="90" r="3.2" fill="var(--flag)" opacity="0.61"/><circle cx="218" cy="160" r="3.1" fill="var(--contour)" opacity="0.53"/><circle cx="150" cy="60" r="3.0" fill="var(--p-teal-300)" opacity="0.75"/><circle cx="79" cy="106" r="3.7" fill="var(--flag)" opacity="0.59"/><circle cx="65" cy="143" r="3.9" fill="var(--contour)" opacity="0.68"/><circle cx="42" cy="114" r="4.2" fill="var(--p-teal-300)" opacity="0.74"/><circle cx="205" cy="144" r="4.7" fill="var(--flag)" opacity="0.47"/><circle cx="50" cy="150" r="5.3" fill="var(--contour)" opacity="0.65"/><circle cx="123" cy="190" r="5.1" fill="var(--p-teal-300)" opacity="0.45"/><circle cx="228" cy="118" r="3.6" fill="var(--flag)" opacity="0.46"/><circle cx="105" cy="117" r="3.1" fill="var(--contour)" opacity="0.51"/><circle cx="68" cy="207" r="4.5" fill="var(--p-teal-300)" opacity="0.35"/><circle cx="288" cy="82" r="4.2" fill="var(--flag)" opacity="0.57"/><circle cx="147" cy="104" r="4.1" fill="var(--contour)" opacity="0.40"/><circle cx="316" cy="65" r="5.1" fill="var(--p-teal-300)" opacity="0.44"/><circle cx="137" cy="125" r="3.1" fill="var(--flag)" opacity="0.40"/><circle cx="156" cy="137" r="5.2" fill="var(--contour)" opacity="0.75"/><circle cx="54" cy="158" r="3.3" fill="var(--p-teal-300)" opacity="0.67"/><circle cx="143" cy="236" r="4.4" fill="var(--flag)" opacity="0.40"/><circle cx="42" cy="95" r="5.2" fill="var(--contour)" opacity="0.41"/><circle cx="193" cy="122" r="3.9" fill="var(--p-teal-300)" opacity="0.67"/><circle cx="108" cy="198" r="4.7" fill="var(--flag)" opacity="0.72"/><circle cx="206" cy="242" r="4.1" fill="var(--contour)" opacity="0.58"/><circle cx="239" cy="225" r="5.2" fill="var(--p-teal-300)" opacity="0.40"/><circle cx="84" cy="157" r="5.0" fill="var(--flag)" opacity="0.56"/><circle cx="136" cy="252" r="3.7" fill="var(--contour)" opacity="0.38"/><circle cx="57" cy="47" r="4.8" fill="var(--p-teal-300)" opacity="0.39"/><circle cx="269" cy="231" r="5.5" fill="var(--flag)" opacity="0.67"/><circle cx="176" cy="177" r="5.1" fill="var(--contour)" opacity="0.64"/><circle cx="133" cy="208" r="3.3" fill="var(--p-teal-300)" opacity="0.47"/><circle cx="359" cy="144" r="3.7" fill="var(--flag)" opacity="0.66"/><circle cx="184" cy="41" r="3.1" fill="var(--contour)" opacity="0.45"/><circle cx="146" cy="246" r="3.6" fill="var(--p-teal-300)" opacity="0.69"/><circle cx="313" cy="132" r="5.5" fill="var(--flag)" opacity="0.65"/><circle cx="195" cy="98" r="4.2" fill="var(--contour)" opacity="0.71"/><circle cx="212" cy="83" r="3.9" fill="var(--p-teal-300)" opacity="0.54"/><circle cx="101" cy="166" r="3.1" fill="var(--flag)" opacity="0.68"/><circle cx="97" cy="63" r="4.5" fill="var(--contour)" opacity="0.47"/><circle cx="323" cy="149" r="4.3" fill="var(--p-teal-300)" opacity="0.68"/><circle cx="109" cy="204" r="4.6" fill="var(--flag)" opacity="0.52"/><circle cx="347" cy="45" r="5.2" fill="var(--contour)" opacity="0.41"/><circle cx="309" cy="74" r="3.1" fill="var(--p-teal-300)" opacity="0.55"/><circle cx="336" cy="97" r="4.2" fill="var(--flag)" opacity="0.59"/><circle cx="118" cy="157" r="3.0" fill="var(--contour)" opacity="0.53"/><circle cx="283" cy="115" r="3.6" fill="var(--p-teal-300)" opacity="0.37"/><circle cx="264" cy="134" r="5.3" fill="var(--flag)" opacity="0.65"/><circle cx="72" cy="241" r="5.3" fill="var(--contour)" opacity="0.68"/><circle cx="200" cy="150" r="130" fill="none" stroke="var(--ink)" stroke-width="1.2" stroke-dasharray="4 6" opacity="0.25"/></svg>
+            <img src="img/services/data-stories-3.jpg" alt="" loading="lazy" onerror="this.remove();">
+          </div>
+          <div class="cinema-scrim"></div>
+        </div>
           <div class="summit" aria-hidden="true"><i></i><b class="r1"></b><b class="r2"></b></div>
           <h3>Data Stories</h3>
           <p>Turn a dense report into something people actually read. Scrollytelling and immersive narratives paced for a real audience, not a meeting.</p>
           <div class="tags"><span>Scrollytelling</span><span>Longform</span><span>Microsites</span></div>
         </div>
         <div class="card" tabindex="0">
+        <div class="card-cinema" aria-hidden="true">
+          <div class="cinema-frame active">
+            <!-- Suggested real photo: satellite -->
+            <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><circle cx="200" cy="150" r="90" fill="none" stroke="var(--contour)" stroke-width="2" opacity="0.5"/><path d="M150 110 C 170 95, 210 100, 230 120 C 245 135, 235 165, 210 175 C 185 185, 160 170, 155 145 Z" fill="var(--p-teal-300)" opacity="0.25" stroke="var(--p-teal-300)" stroke-width="1.5"/><ellipse cx="200" cy="150" rx="140" ry="30" fill="none" stroke="var(--flag)" stroke-width="1.5" opacity="0.45" transform="rotate(-20 200 150)"/></svg>
+            <img src="img/services/maps-spatial-1.jpg" alt="" loading="lazy" onerror="this.remove();">
+          </div>
+          <div class="cinema-frame">
+            <!-- Suggested real photo: geospatial-dashboard -->
+            <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect x="50" y="60" width="140" height="90" rx="4" fill="none" stroke="var(--contour)" stroke-width="2" opacity="0.55"/><circle cx="120" cy="105" r="30" fill="none" stroke="var(--contour)" stroke-width="1.5" opacity="0.45"/><circle cx="110" cy="98" r="5" fill="var(--flag)" opacity="0.85"/><rect x="210" y="60" width="140" height="90" rx="4" fill="none" stroke="var(--p-teal-300)" stroke-width="2" opacity="0.55"/><rect x="225" y="120" width="14" height="20" fill="var(--p-teal-300)" opacity="0.55"/><rect x="248" y="100" width="14" height="40" fill="var(--p-teal-300)" opacity="0.55"/><rect x="271" y="115" width="14" height="25" fill="var(--p-teal-300)" opacity="0.55"/><rect x="294" y="90" width="14" height="50" fill="var(--p-teal-300)" opacity="0.55"/><rect x="50" y="170" width="300" height="60" rx="4" fill="none" stroke="var(--flag)" stroke-width="2" opacity="0.45"/><path d="M65 210 L110 190 L155 205 L200 185 L245 200 L290 180 L335 195" stroke="var(--flag)" stroke-width="2" fill="none" opacity="0.65"/></svg>
+            <img src="img/services/maps-spatial-2.jpg" alt="" loading="lazy" onerror="this.remove();">
+          </div>
+          <div class="cinema-frame">
+            <!-- Suggested real photo: forensic-3d -->
+            <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><path d="M100 220 L100 100 L220 70 L220 190 Z" fill="var(--contour)" opacity="0.08" stroke="var(--contour)" stroke-width="2"/><path d="M100 100 L180 60 L300 90 L220 130" fill="none" stroke="var(--contour)" stroke-width="1.5" opacity="0.5"/><path d="M220 190 L300 160 L300 90" fill="none" stroke="var(--contour)" stroke-width="1.5" opacity="0.5"/><circle cx="160" cy="160" r="6" fill="var(--flag)" opacity="0.95"/><path d="M160 160 L160 220" stroke="var(--flag)" stroke-width="1.2" stroke-dasharray="2 4" opacity="0.65"/><path d="M160 160 L250 120" stroke="var(--ink)" stroke-width="1.2" stroke-dasharray="2 4" opacity="0.4"/><circle cx="250" cy="120" r="6" fill="var(--p-teal-300)" opacity="0.95"/><circle cx="130" cy="105" r="6" fill="var(--contour)" opacity="0.85"/></svg>
+            <img src="img/services/maps-spatial-3.jpg" alt="" loading="lazy" onerror="this.remove();">
+          </div>
+          <div class="cinema-scrim"></div>
+        </div>
           <div class="summit" aria-hidden="true"><i></i><b class="r1"></b><b class="r2"></b></div>
           <h3>Maps &amp; Spatial Intelligence</h3>
           <p>See the pattern the spreadsheet was hiding. Thematic mapping and remote sensing made legible to a non-specialist.</p>
           <div class="tags"><span>Web maps</span><span>GIS</span><span>Remote sensing</span></div>
         </div>
         <div class="card" tabindex="0">
+        <div class="card-cinema" aria-hidden="true">
+          <div class="cinema-frame active">
+            <!-- Suggested real photo: geospatial-dashboard -->
+            <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect x="50" y="60" width="140" height="90" rx="4" fill="none" stroke="var(--contour)" stroke-width="2" opacity="0.5"/><circle cx="120" cy="105" r="30" fill="none" stroke="var(--contour)" stroke-width="1.5" opacity="0.4"/><rect x="210" y="60" width="140" height="90" rx="4" fill="none" stroke="var(--p-teal-300)" stroke-width="2" opacity="0.5"/><rect x="225" y="120" width="14" height="20" fill="var(--p-teal-300)" opacity="0.5"/><rect x="248" y="100" width="14" height="40" fill="var(--p-teal-300)" opacity="0.5"/><rect x="271" y="115" width="14" height="25" fill="var(--p-teal-300)" opacity="0.5"/><rect x="294" y="90" width="14" height="50" fill="var(--p-teal-300)" opacity="0.5"/></svg>
+            <img src="img/services/dashboards-1.jpg" alt="" loading="lazy" onerror="this.remove();">
+          </div>
+          <div class="cinema-frame">
+            <!-- Suggested real photo: early-warning -->
+            <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><circle cx="200" cy="150" r="40" fill="none" stroke="var(--p-teal-300)" stroke-width="2" opacity="0.55"/><circle cx="200" cy="150" r="75" fill="none" stroke="var(--p-teal-300)" stroke-width="1.5" opacity="0.5"/><circle cx="200" cy="150" r="110" fill="none" stroke="var(--contour)" stroke-width="1.5" opacity="0.35"/><path d="M200 150 L200 60 A90 90 0 0 1 264 96 Z" fill="var(--flag)" opacity="0.18"/><circle cx="200" cy="150" r="6" fill="var(--flag)" opacity="0.9"/><path d="M195 145 L205 145 L200 130 Z" fill="var(--flag)" opacity="0.9"/></svg>
+            <img src="img/services/dashboards-2.jpg" alt="" loading="lazy" onerror="this.remove();">
+          </div>
+          <div class="cinema-frame">
+            <!-- Suggested real photo: forensic-3d -->
+            <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><path d="M100 220 L100 100 L220 70 L220 190 Z" fill="var(--contour)" opacity="0.08" stroke="var(--contour)" stroke-width="2"/><path d="M100 100 L180 60 L300 90 L220 130" fill="none" stroke="var(--contour)" stroke-width="1.5" opacity="0.5"/><path d="M220 190 L300 160 L300 90" fill="none" stroke="var(--contour)" stroke-width="1.5" opacity="0.5"/><circle cx="160" cy="160" r="6" fill="var(--flag)" opacity="0.95"/><path d="M160 160 L160 220" stroke="var(--flag)" stroke-width="1.2" stroke-dasharray="2 4" opacity="0.65"/><path d="M160 160 L250 120" stroke="var(--ink)" stroke-width="1.2" stroke-dasharray="2 4" opacity="0.4"/><circle cx="250" cy="120" r="6" fill="var(--p-teal-300)" opacity="0.95"/><circle cx="130" cy="105" r="6" fill="var(--contour)" opacity="0.85"/></svg>
+            <img src="img/services/dashboards-3.jpg" alt="" loading="lazy" onerror="this.remove();">
+          </div>
+          <div class="cinema-scrim"></div>
+        </div>
           <div class="summit" aria-hidden="true"><i></i><b class="r1"></b><b class="r2"></b></div>
           <h3>Dashboards &amp; Decision Tools</h3>
           <p>Built for the question a decision-maker is actually facing, not built to showcase every dataset available.</p>
           <div class="tags"><span>Dashboards</span><span>KPI tracking</span><span>Briefings</span></div>
         </div>
         <div class="card" tabindex="0">
+        <div class="card-cinema" aria-hidden="true">
+          <div class="cinema-frame active">
+            <!-- Suggested real photo: drone-crowd -->
+            <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><circle cx="185" cy="163" r="5.3" fill="var(--contour)" opacity="0.54"/><circle cx="203" cy="169" r="3.5" fill="var(--p-teal-300)" opacity="0.55"/><circle cx="242" cy="214" r="3.2" fill="var(--flag)" opacity="0.47"/><circle cx="69" cy="218" r="4.7" fill="var(--contour)" opacity="0.37"/><circle cx="354" cy="252" r="4.6" fill="var(--p-teal-300)" opacity="0.60"/><circle cx="90" cy="43" r="4.3" fill="var(--flag)" opacity="0.37"/><circle cx="101" cy="93" r="3.1" fill="var(--contour)" opacity="0.54"/><circle cx="181" cy="225" r="4.3" fill="var(--p-teal-300)" opacity="0.61"/><circle cx="200" cy="186" r="4.1" fill="var(--flag)" opacity="0.46"/><circle cx="359" cy="259" r="5.1" fill="var(--contour)" opacity="0.63"/><circle cx="141" cy="91" r="3.7" fill="var(--p-teal-300)" opacity="0.38"/><circle cx="285" cy="128" r="5.1" fill="var(--flag)" opacity="0.50"/><circle cx="347" cy="226" r="3.0" fill="var(--contour)" opacity="0.43"/><circle cx="331" cy="143" r="5.5" fill="var(--p-teal-300)" opacity="0.51"/><circle cx="63" cy="178" r="4.9" fill="var(--flag)" opacity="0.46"/><circle cx="68" cy="113" r="5.4" fill="var(--contour)" opacity="0.65"/><circle cx="78" cy="94" r="3.3" fill="var(--p-teal-300)" opacity="0.37"/><circle cx="295" cy="79" r="4.4" fill="var(--flag)" opacity="0.53"/><circle cx="101" cy="201" r="3.3" fill="var(--contour)" opacity="0.61"/><circle cx="77" cy="133" r="3.5" fill="var(--p-teal-300)" opacity="0.46"/><circle cx="351" cy="217" r="3.8" fill="var(--flag)" opacity="0.70"/><circle cx="107" cy="127" r="5.1" fill="var(--contour)" opacity="0.61"/><circle cx="72" cy="258" r="3.5" fill="var(--p-teal-300)" opacity="0.45"/><circle cx="287" cy="112" r="3.7" fill="var(--flag)" opacity="0.38"/><circle cx="69" cy="168" r="3.6" fill="var(--contour)" opacity="0.59"/><circle cx="159" cy="140" r="5.4" fill="var(--p-teal-300)" opacity="0.54"/><circle cx="224" cy="231" r="3.5" fill="var(--flag)" opacity="0.41"/><circle cx="331" cy="220" r="3.6" fill="var(--contour)" opacity="0.43"/><circle cx="277" cy="247" r="3.5" fill="var(--p-teal-300)" opacity="0.73"/><circle cx="322" cy="173" r="4.1" fill="var(--flag)" opacity="0.39"/><circle cx="52" cy="252" r="3.6" fill="var(--contour)" opacity="0.63"/><circle cx="122" cy="221" r="4.5" fill="var(--p-teal-300)" opacity="0.47"/><circle cx="96" cy="198" r="3.2" fill="var(--flag)" opacity="0.44"/><circle cx="219" cy="228" r="4.5" fill="var(--contour)" opacity="0.46"/><circle cx="334" cy="85" r="3.0" fill="var(--p-teal-300)" opacity="0.46"/><circle cx="183" cy="53" r="3.4" fill="var(--flag)" opacity="0.50"/><circle cx="223" cy="69" r="3.9" fill="var(--contour)" opacity="0.71"/><circle cx="354" cy="185" r="4.7" fill="var(--p-teal-300)" opacity="0.58"/><circle cx="85" cy="48" r="3.0" fill="var(--flag)" opacity="0.71"/><circle cx="264" cy="252" r="3.1" fill="var(--contour)" opacity="0.60"/><circle cx="194" cy="201" r="3.8" fill="var(--p-teal-300)" opacity="0.75"/><circle cx="64" cy="160" r="4.8" fill="var(--flag)" opacity="0.71"/><circle cx="276" cy="195" r="5.0" fill="var(--contour)" opacity="0.72"/><circle cx="153" cy="191" r="5.3" fill="var(--p-teal-300)" opacity="0.70"/><circle cx="173" cy="214" r="5.2" fill="var(--flag)" opacity="0.58"/><circle cx="240" cy="124" r="4.5" fill="var(--contour)" opacity="0.59"/><circle cx="66" cy="181" r="5.5" fill="var(--p-teal-300)" opacity="0.70"/><circle cx="273" cy="125" r="4.8" fill="var(--flag)" opacity="0.58"/><circle cx="181" cy="224" r="3.2" fill="var(--contour)" opacity="0.65"/><circle cx="50" cy="172" r="4.2" fill="var(--p-teal-300)" opacity="0.44"/><circle cx="263" cy="149" r="4.5" fill="var(--flag)" opacity="0.72"/><circle cx="122" cy="42" r="3.8" fill="var(--contour)" opacity="0.62"/><circle cx="105" cy="77" r="5.3" fill="var(--p-teal-300)" opacity="0.61"/><circle cx="181" cy="236" r="3.8" fill="var(--flag)" opacity="0.62"/><circle cx="104" cy="135" r="5.0" fill="var(--contour)" opacity="0.72"/><circle cx="322" cy="125" r="4.5" fill="var(--p-teal-300)" opacity="0.48"/><circle cx="84" cy="149" r="5.1" fill="var(--flag)" opacity="0.69"/><circle cx="268" cy="249" r="3.7" fill="var(--contour)" opacity="0.42"/><circle cx="184" cy="101" r="3.5" fill="var(--p-teal-300)" opacity="0.52"/><circle cx="240" cy="149" r="3.8" fill="var(--flag)" opacity="0.69"/><circle cx="354" cy="140" r="3.2" fill="var(--contour)" opacity="0.36"/><circle cx="319" cy="49" r="4.8" fill="var(--p-teal-300)" opacity="0.58"/><circle cx="139" cy="214" r="3.0" fill="var(--flag)" opacity="0.40"/><circle cx="186" cy="45" r="5.1" fill="var(--contour)" opacity="0.44"/><circle cx="85" cy="50" r="4.6" fill="var(--p-teal-300)" opacity="0.53"/><circle cx="242" cy="184" r="5.0" fill="var(--flag)" opacity="0.73"/><circle cx="259" cy="84" r="4.2" fill="var(--contour)" opacity="0.42"/><circle cx="43" cy="144" r="4.8" fill="var(--p-teal-300)" opacity="0.42"/><circle cx="127" cy="116" r="4.7" fill="var(--flag)" opacity="0.56"/><circle cx="237" cy="206" r="4.0" fill="var(--contour)" opacity="0.67"/></svg>
+            <img src="img/services/outreach-1.jpg" alt="" loading="lazy" onerror="this.remove();">
+          </div>
+          <div class="cinema-frame">
+            <!-- Suggested real photo: map-annotation -->
+            <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><path d="M60 120 C 100 90, 160 100, 190 130 C 230 110, 280 130, 320 100 C 340 160, 300 200, 260 190 C 220 220, 160 210, 130 180 C 90 190, 60 160, 60 120 Z" fill="none" stroke="var(--contour)" stroke-width="2" opacity="0.55"/><circle cx="180" cy="140" r="8" fill="none" stroke="var(--flag)" stroke-width="2.5" opacity="0.85"/><path d="M188 133 C 220 110, 240 95, 260 80" stroke="var(--flag)" stroke-width="1.5" stroke-dasharray="2 4" opacity="0.7" fill="none"/><rect x="255" y="60" width="70" height="20" rx="3" fill="none" stroke="var(--flag)" stroke-width="1.5" opacity="0.6"/></svg>
+            <img src="img/services/outreach-2.jpg" alt="" loading="lazy" onerror="this.remove();">
+          </div>
+          <div class="cinema-frame">
+            <!-- Suggested real photo: typeset-archive -->
+            <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect x="60" y="70" width="280" height="6" fill="var(--contour)" opacity="0.5"/><rect x="60" y="90" width="260" height="6" fill="var(--contour)" opacity="0.4"/><rect x="55" y="106" width="240" height="26" fill="var(--flag)" opacity="0.16" stroke="var(--flag)" stroke-width="1.5"/><rect x="55" y="132" width="230" height="26" fill="var(--p-teal-300)" opacity="0.22" stroke="var(--p-teal-300)" stroke-width="1.5"/><rect x="60" y="180" width="250" height="6" fill="var(--p-teal-300)" opacity="0.45"/><rect x="60" y="210" width="180" height="6" fill="var(--flag)" opacity="0.5"/><rect x="60" y="230" width="270" height="6" fill="var(--flag)" opacity="0.45"/></svg>
+            <img src="img/services/outreach-3.jpg" alt="" loading="lazy" onerror="this.remove();">
+          </div>
+          <div class="cinema-scrim"></div>
+        </div>
           <div class="summit" aria-hidden="true"><i></i><b class="r1"></b><b class="r2"></b></div>
           <h3>Outreach &amp; Advocacy</h3>
           <p>Get your data in front of the people who decide &mdash; investors, regulators, customers, the public.</p>
@@ -1232,22 +1334,82 @@
     <div class="wrap">
       <h2>How we work</h2>
       <div class="process-row">
-        <div class="process-step">
+        <div class="process-step" tabindex="0">
+        <div class="card-cinema" aria-hidden="true">
+          <div class="cinema-frame active">
+            <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><circle cx="160" cy="140" r="60" fill="none" stroke="var(--contour)" stroke-width="3" opacity="0.55"/><line x1="204" y1="184" x2="260" y2="240" stroke="var(--contour)" stroke-width="3" opacity="0.55" stroke-linecap="round"/></svg>
+            <img src="img/process/scope-1.jpg" alt="" loading="lazy" onerror="this.remove();">
+          </div>
+          <div class="cinema-frame">
+            <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><circle cx="160" cy="140" r="60" fill="none" stroke="var(--contour)" stroke-width="3" opacity="0.6"/><line x1="204" y1="184" x2="260" y2="240" stroke="var(--contour)" stroke-width="3" opacity="0.6" stroke-linecap="round"/><path d="M130 140 L150 160 L195 105" stroke="var(--p-teal-300)" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.75"/></svg>
+            <img src="img/process/scope-2.jpg" alt="" loading="lazy" onerror="this.remove();">
+          </div>
+          <div class="cinema-frame">
+            <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><circle cx="160" cy="140" r="60" fill="none" stroke="var(--p-teal-300)" stroke-width="3" opacity="0.65"/><line x1="204" y1="184" x2="260" y2="240" stroke="var(--p-teal-300)" stroke-width="3" opacity="0.65" stroke-linecap="round"/><path d="M130 140 L150 160 L195 105" stroke="var(--flag)" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/><circle cx="160" cy="140" r="80" fill="none" stroke="var(--contour)" stroke-width="1.5" opacity="0.3" stroke-dasharray="3 6"/></svg>
+            <img src="img/process/scope-3.jpg" alt="" loading="lazy" onerror="this.remove();">
+          </div>
+          <div class="cinema-scrim"></div>
+        </div>
           <span class="num">1</span>
           <h4>Scope</h4>
           <p>We define the one question your audience needs to walk away answering — before any tool gets chosen.</p>
         </div>
-        <div class="process-step">
+        <div class="process-step" tabindex="0">
+        <div class="card-cinema" aria-hidden="true">
+          <div class="cinema-frame active">
+            <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect x="70" y="90" width="260" height="24" rx="4" fill="none" stroke="var(--contour)" stroke-width="2" opacity="0.5"/><rect x="70" y="138" width="180" height="24" rx="4" fill="none" stroke="var(--p-teal-300)" stroke-width="2" opacity="0.5"/><rect x="70" y="186" width="220" height="24" rx="4" fill="none" stroke="var(--contour)" stroke-width="2" opacity="0.45"/></svg>
+            <img src="img/process/source-1.jpg" alt="" loading="lazy" onerror="this.remove();">
+          </div>
+          <div class="cinema-frame">
+            <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect x="70" y="90" width="260" height="24" rx="4" fill="none" stroke="var(--contour)" stroke-width="2" opacity="0.55"/><path d="M320 102 L340 102" stroke="var(--flag)" stroke-width="3" opacity="0.7" stroke-linecap="round"/><rect x="70" y="138" width="180" height="24" rx="4" fill="var(--p-teal-300)" opacity="0.2" stroke="var(--p-teal-300)" stroke-width="2"/><rect x="70" y="186" width="220" height="24" rx="4" fill="none" stroke="var(--contour)" stroke-width="2" opacity="0.45"/><circle cx="310" cy="198" r="9" fill="none" stroke="var(--flag)" stroke-width="2.5" opacity="0.8"/><path d="M305 198 L309 202 L317 192" stroke="var(--flag)" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/></svg>
+            <img src="img/process/source-2.jpg" alt="" loading="lazy" onerror="this.remove();">
+          </div>
+          <div class="cinema-frame">
+            <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect x="70" y="90" width="260" height="24" rx="4" fill="var(--p-teal-300)" opacity="0.2" stroke="var(--p-teal-300)" stroke-width="2"/><circle cx="310" cy="102" r="9" fill="none" stroke="var(--flag)" stroke-width="2.5" opacity="0.85"/><path d="M305 102 L309 106 L317 96" stroke="var(--flag)" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><rect x="70" y="138" width="180" height="24" rx="4" fill="var(--p-teal-300)" opacity="0.2" stroke="var(--p-teal-300)" stroke-width="2"/><circle cx="260" cy="150" r="9" fill="none" stroke="var(--flag)" stroke-width="2.5" opacity="0.85"/><path d="M255 150 L259 154 L267 144" stroke="var(--flag)" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><rect x="70" y="186" width="220" height="24" rx="4" fill="var(--p-teal-300)" opacity="0.2" stroke="var(--p-teal-300)" stroke-width="2"/><circle cx="300" cy="198" r="9" fill="none" stroke="var(--flag)" stroke-width="2.5" opacity="0.85"/><path d="M295 198 L299 202 L307 192" stroke="var(--flag)" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <img src="img/process/source-3.jpg" alt="" loading="lazy" onerror="this.remove();">
+          </div>
+          <div class="cinema-scrim"></div>
+        </div>
           <span class="num">2</span>
           <h4>Source</h4>
           <p>Data is audited, cleaned, and gaps are flagged early — not discovered halfway through design.</p>
         </div>
-        <div class="process-step">
+        <div class="process-step" tabindex="0">
+        <div class="card-cinema" aria-hidden="true">
+          <div class="cinema-frame active">
+            <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect x="90" y="200" width="50" height="50" fill="none" stroke="var(--contour)" stroke-width="2.5" opacity="0.5"/><rect x="175" y="170" width="50" height="80" fill="none" stroke="var(--p-teal-300)" stroke-width="2.5" opacity="0.5"/><rect x="260" y="140" width="50" height="110" fill="none" stroke="var(--flag)" stroke-width="2.5" opacity="0.5"/></svg>
+            <img src="img/process/shape-1.jpg" alt="" loading="lazy" onerror="this.remove();">
+          </div>
+          <div class="cinema-frame">
+            <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect x="90" y="200" width="50" height="50" fill="var(--contour)" opacity="0.25" stroke="var(--contour)" stroke-width="2.5"/><rect x="175" y="170" width="50" height="80" fill="var(--p-teal-300)" opacity="0.25" stroke="var(--p-teal-300)" stroke-width="2.5"/><rect x="260" y="140" width="50" height="110" fill="none" stroke="var(--flag)" stroke-width="2.5" opacity="0.55"/><path d="M115 200 L200 170 L285 140" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="3 5" opacity="0.4" fill="none"/></svg>
+            <img src="img/process/shape-2.jpg" alt="" loading="lazy" onerror="this.remove();">
+          </div>
+          <div class="cinema-frame">
+            <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect x="90" y="200" width="50" height="50" fill="var(--contour)" opacity="0.3" stroke="var(--contour)" stroke-width="2.5"/><rect x="175" y="170" width="50" height="80" fill="var(--p-teal-300)" opacity="0.3" stroke="var(--p-teal-300)" stroke-width="2.5"/><rect x="260" y="140" width="50" height="110" fill="var(--flag)" opacity="0.3" stroke="var(--flag)" stroke-width="2.5"/><path d="M115 200 L200 170 L285 140" stroke="var(--ink)" stroke-width="2" opacity="0.55" fill="none"/><circle cx="115" cy="200" r="5" fill="var(--ink)" opacity="0.6"/><circle cx="200" cy="170" r="5" fill="var(--ink)" opacity="0.6"/><circle cx="285" cy="140" r="5" fill="var(--ink)" opacity="0.6"/></svg>
+            <img src="img/process/shape-3.jpg" alt="" loading="lazy" onerror="this.remove();">
+          </div>
+          <div class="cinema-scrim"></div>
+        </div>
           <span class="num">3</span>
           <h4>Shape</h4>
           <p>The right format gets built — dashboard, map, scrollytelling story — scoped to your timeline and budget.</p>
         </div>
-        <div class="process-step">
+        <div class="process-step" tabindex="0">
+        <div class="card-cinema" aria-hidden="true">
+          <div class="cinema-frame active">
+            <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect x="130" y="120" width="140" height="100" rx="6" fill="none" stroke="var(--contour)" stroke-width="2.5" opacity="0.55"/><path d="M130 150 L200 190 L270 150" stroke="var(--contour)" stroke-width="2.5" fill="none" opacity="0.5"/></svg>
+            <img src="img/process/ship-1.jpg" alt="" loading="lazy" onerror="this.remove();">
+          </div>
+          <div class="cinema-frame">
+            <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect x="130" y="120" width="140" height="100" rx="6" fill="none" stroke="var(--contour)" stroke-width="2.5" opacity="0.6"/><path d="M130 150 L200 190 L270 150" stroke="var(--contour)" stroke-width="2.5" fill="none" opacity="0.55"/><path d="M270 170 L310 170" stroke="var(--flag)" stroke-width="3" opacity="0.7" stroke-linecap="round"/><path d="M300 160 L312 170 L300 180" stroke="var(--flag)" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.75"/></svg>
+            <img src="img/process/ship-2.jpg" alt="" loading="lazy" onerror="this.remove();">
+          </div>
+          <div class="cinema-frame">
+            <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect x="130" y="120" width="140" height="100" rx="6" fill="var(--p-teal-300)" opacity="0.2" stroke="var(--p-teal-300)" stroke-width="2.5"/><path d="M130 150 L200 190 L270 150" stroke="var(--contour)" stroke-width="2.5" fill="none" opacity="0.6"/><circle cx="200" cy="150" r="10" fill="none" stroke="var(--flag)" stroke-width="2.5" opacity="0.85"/><path d="M195 150 L199 154 L207 144" stroke="var(--flag)" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M270 170 L320 170" stroke="var(--flag)" stroke-width="3" opacity="0.75" stroke-linecap="round"/><path d="M308 160 L322 170 L308 180" stroke="var(--flag)" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/></svg>
+            <img src="img/process/ship-3.jpg" alt="" loading="lazy" onerror="this.remove();">
+          </div>
+          <div class="cinema-scrim"></div>
+        </div>
           <span class="num">4</span>
           <h4>Ship</h4>
           <p>Delivered, documented, and handed off in a form your team can actually maintain.</p>
@@ -2103,6 +2265,50 @@
         });
       });
       closeBtn.addEventListener('click', close);
+    })();
+
+    // ===== Services card cinema =====
+    // Desktop: frames rapid-cycle while hovered/focused, reset on leave.
+    // Touch: cards auto-cycle gently while ≥60% in view (no hover exists).
+    // Reduced motion: first frame shows statically, no cycling.
+    (function(){
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var isTouch = !window.matchMedia('(hover: hover)').matches;
+      document.querySelectorAll('.card, .process-step').forEach(function(card){
+        var cin = card.querySelector('.card-cinema');
+        if (!cin) return;
+        var frames = cin.querySelectorAll('.cinema-frame');
+        if (frames.length < 2) return;
+        var idx = 0, timer = null;
+        function show(i){
+          frames.forEach(function(f, j){ f.classList.toggle('active', j === i); });
+        }
+        function start(){
+          if (reduce || timer) return;
+          timer = setInterval(function(){
+            idx = (idx + 1) % frames.length;
+            show(idx);
+          }, isTouch ? 900 : 550);
+        }
+        function stop(){
+          if (timer){ clearInterval(timer); timer = null; }
+          idx = 0; show(0);
+        }
+        if (isTouch){
+          var io = new IntersectionObserver(function(entries){
+            entries.forEach(function(en){
+              if (en.isIntersecting){ card.classList.add('cinema-on'); start(); }
+              else { card.classList.remove('cinema-on'); stop(); }
+            });
+          }, { threshold: 0.6 });
+          io.observe(card);
+        } else {
+          card.addEventListener('mouseenter', start);
+          card.addEventListener('mouseleave', stop);
+          card.addEventListener('focusin', start);
+          card.addEventListener('focusout', stop);
+        }
+      });
     })();
 
     // Mobile nav toggle
