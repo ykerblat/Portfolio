@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>World Bank Immersive Stories — Contour Lines Studio</title>
+<meta name="description" content="A full archive of immersive stories and StoryMaps produced by Yann Kerblat / Contour Lines Studio for the World Bank Group, GFDRR, and GWSP.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/svg+xml" href="favicon-a.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Martian+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     DESIGN TOKENS — mirrors index.html exactly so pages feel
+     continuous. Copy primitive block if index.html changes.
+     ============================================================ */
+  :root{
+    --p-neutral-100: #EDEAE2;
+    --p-neutral-150: #E4E0D4;
+    --p-neutral-400: #827D6C;
+    --p-neutral-650: #3A3D35;
+    --p-neutral-900: #0D0E0B;
+    --p-sienna-500: #8B5E3C;
+    --p-teal-300: #5FA39A;
+    --p-teal-500: #1F5C56;
+    --p-flag-500: #BC4B26;
+    --p-brass-400: #C19A4B;
+
+    --color-surface: var(--p-neutral-100);
+    --color-surface-raised: var(--p-neutral-150);
+    --color-text-primary: var(--p-neutral-900);
+    --color-text-secondary: var(--p-neutral-650);
+    --color-border-subtle: var(--p-neutral-400);
+    --color-link: var(--p-teal-500);
+    --color-focus-ring: var(--p-teal-500);
+
+    --paper: var(--color-surface);
+    --ink: var(--color-text-primary);
+    --contour: var(--p-sienna-500);
+    --line: #B5AFA0;
+    --line-strong: #827D6C;
+    --slate: var(--p-teal-500);
+    --flag: var(--p-flag-500);
+
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-mono: 'Martian Mono', 'Courier New', monospace;
+    --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --color-surface: var(--p-neutral-900);
+      --color-surface-raised: #23251C;
+      --color-text-primary: var(--p-neutral-100);
+      --color-text-secondary: #C7C2B0;
+      --color-border-subtle: #6B6F5E;
+      --color-link: #3DDBC9;
+    }
+  }
+  [data-theme="dark"]{
+    --color-surface: var(--p-neutral-900);
+    --color-surface-raised: #23251C;
+    --color-text-primary: var(--p-neutral-100);
+    --color-text-secondary: #C7C2B0;
+    --color-border-subtle: #6B6F5E;
+    --color-link: #3DDBC9;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ overflow-x:hidden; }
+  body{
+    margin:0; background:var(--color-surface); color:var(--color-text-primary);
+    font-family:var(--font-body);
+    background-image:
+      radial-gradient(ellipse 900px 600px at 12% -8%, rgba(168,124,44,0.07), transparent 58%),
+      radial-gradient(ellipse 760px 520px at 108% 18%, rgba(139,94,60,0.06), transparent 55%);
+  }
+  a:focus-visible, button:focus-visible{ outline:2px solid var(--color-focus-ring); outline-offset:2px; }
+  h1,h2,h3,h4,p{ overflow-wrap:break-word; word-break:break-word; }
+
+  .wrap{ max-width:1200px; margin:0 auto; padding:0 32px; }
+
+  /* ── SITE HEADER ─────────────────────────────────── */
+  .site-header{
+    border-bottom:1px solid var(--line); padding:20px 0;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:16px;
+  }
+  .site-header .wrap{ display:flex; align-items:center; justify-content:space-between; width:100%; }
+  .site-header-wordmark{
+    font-family:var(--font-mono); font-size:13px; letter-spacing:0.16em; text-transform:uppercase;
+    color:var(--ink); text-decoration:none;
+  }
+  .site-header-wordmark:hover{ color:var(--contour); }
+  .site-header-back{
+    font-family:var(--font-mono); font-size:11px; letter-spacing:0.06em; text-transform:uppercase;
+    color:var(--color-text-secondary); text-decoration:none;
+    display:flex; align-items:center; gap:6px;
+  }
+  .site-header-back:hover{ color:var(--contour); }
+
+  /* ── PAGE INTRO ──────────────────────────────────── */
+  .page-intro{ padding:72px 0 56px; }
+  .page-intro-eyebrow{
+    font-family:var(--font-mono); font-size:11px; letter-spacing:0.12em; text-transform:uppercase;
+    color:var(--contour); margin:0 0 14px;
+  }
+  .page-intro h1{
+    font-family:var(--font-display); font-weight:400; font-optical-sizing:auto;
+    font-size:clamp(2rem, 5vw, 3rem); line-height:1.08; margin:0 0 20px;
+  }
+  .page-intro p{
+    font-size:17px; line-height:1.6; color:var(--color-text-secondary);
+    max-width:540px; margin:0;
+  }
+
+  /* ── FILTER BAR ──────────────────────────────────── */
+  .filter-bar{ padding:0 0 40px; }
+  .platform-toggle{
+    display:inline-flex; border:1px solid var(--line-strong); border-radius:10px;
+    overflow:hidden; margin-bottom:20px;
+  }
+  .platform-btn{
+    font-family:var(--font-mono); font-size:11px; letter-spacing:0.04em; text-transform:uppercase;
+    padding:10px 18px; border:none; background:transparent; color:var(--color-text-secondary);
+    cursor:pointer; min-height:44px;
+    transition:background 0.15s ease, color 0.15s ease;
+  }
+  .platform-btn + .platform-btn{ border-left:1px solid var(--line-strong); }
+  .platform-btn:hover{ color:var(--contour); }
+  .platform-btn.is-active{ background:var(--p-teal-500); color:#FBF4EE; }
+  .filter-bar-inner{
+    display:flex; align-items:center; flex-wrap:wrap; gap:10px;
+    border-bottom:1px solid var(--line); padding-bottom:24px;
+  }
+  .filter-bar-label{
+    font-family:var(--font-mono); font-size:10.5px; text-transform:uppercase;
+    letter-spacing:0.08em; color:var(--color-text-secondary); margin-right:4px; flex-shrink:0;
+  }
+  .filter-btn{
+    font-family:var(--font-mono); font-size:11px; letter-spacing:0.04em; text-transform:uppercase;
+    padding:6px 14px; border-radius:20px; border:1px solid var(--line);
+    background:transparent; color:var(--color-text-secondary); cursor:pointer;
+    transition:border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+    min-height:36px;
+  }
+  .filter-btn:hover{ border-color:var(--contour); color:var(--contour); }
+  .filter-btn.is-active{ border-color:var(--contour); background:var(--contour); color:#FBF4EE; }
+
+  /* ── STORY GRID ──────────────────────────────────── */
+  .story-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(300px, 1fr));
+    gap:24px; padding:0 0 100px;
+  }
+
+  /* ── STORY TILE ──────────────────────────────────── */
+  .story-tile{
+    display:block; text-decoration:none; color:inherit;
+    border:1px solid var(--line); border-radius:10px; overflow:hidden;
+    background:var(--color-surface); position:relative;
+    transition:border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  }
+  .story-tile:hover, .story-tile:focus-visible{
+    border-color:var(--p-teal-300); transform:translateY(-3px);
+    box-shadow:0 10px 24px rgba(0,0,0,0.07);
+  }
+
+  /* image */
+  .story-thumb{
+    aspect-ratio:16/9; overflow:hidden; background:var(--color-surface-raised);
+    position:relative;
+  }
+  .story-thumb img{
+    width:100%; height:100%; object-fit:cover; display:block;
+    transition:opacity 0.2s ease;
+  }
+  .story-tile:hover .story-thumb img, .story-tile:focus-visible .story-thumb img{ opacity:0.92; }
+  .story-thumb-placeholder{
+    /* Shown when no image supplied and img fails to load */
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    background:var(--color-surface-raised);
+  }
+  .story-thumb-placeholder svg{ width:36px; height:36px; opacity:0.3; }
+
+  /* platform badge */
+  .story-platform{
+    position:absolute; top:10px; right:10px; z-index:1;
+    font-family:var(--font-mono); font-size:9px; letter-spacing:0.06em; text-transform:uppercase;
+    background:rgba(13,14,11,0.72); color:#EDEAE2; padding:3px 8px; border-radius:3px;
+    -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+  }
+
+  /* metadata */
+  .story-meta{ padding:16px 18px; }
+  .story-date{
+    font-family:var(--font-mono); font-size:10.5px; letter-spacing:0.04em; text-transform:uppercase;
+    color:var(--color-text-secondary); margin:0 0 8px; display:block;
+  }
+  .story-title{
+    font-family:var(--font-display); font-weight:400; font-size:16px; line-height:1.3;
+    color:var(--color-text-primary); margin:0 0 10px;
+  }
+  .story-tags{ display:flex; flex-wrap:wrap; gap:6px; margin:0 0 10px; }
+  .story-tag{
+    font-family:var(--font-mono); font-size:9.5px; letter-spacing:0.04em; text-transform:uppercase;
+    color:var(--p-teal-500); border:1px solid var(--p-teal-300); padding:2px 8px; border-radius:20px;
+    opacity:0.85;
+  }
+
+  /* description — hidden by default on desktop, revealed on hover via CSS;
+     always visible on touch/mobile (body class set in JS) */
+  .story-desc{
+    font-family:var(--font-body); font-size:13.5px; line-height:1.55;
+    color:var(--color-text-secondary); margin:0; max-height:0; overflow:hidden;
+    transition:max-height 0.25s ease, opacity 0.25s ease; opacity:0;
+  }
+  /* JS adds .touch-device to body; CSS makes description always visible on touch */
+  body.touch-device .story-desc,
+  .story-tile.desc-visible .story-desc{
+    max-height:80px; opacity:1;
+  }
+  @media (hover: hover){
+    .story-tile:hover .story-desc, .story-tile:focus-visible .story-desc{
+      max-height:80px; opacity:1;
+    }
+  }
+
+  /* hidden tile (when filtered out) */
+  .story-tile.is-hidden{
+    display:none;
+  }
+
+  /* ── FOOTER ──────────────────────────────────────── */
+  .site-footer{ border-top:1px solid var(--line); padding:28px 0; }
+  .site-footer-row{
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px;
+  }
+  .site-footer-row p{
+    font-family:var(--font-mono); font-size:11.5px; letter-spacing:0.03em;
+    color:var(--color-text-secondary); margin:0;
+  }
+
+  /* ── RESPONSIVE ──────────────────────────────────── */
+  @media (max-width: 640px){
+    .wrap{ padding:0 18px; }
+    .page-intro{ padding:48px 0 36px; }
+    .story-grid{ grid-template-columns:1fr; }
+    /* On small screens, always show description */
+    .story-desc{ max-height:none !important; opacity:1 !important; }
+  }
+</style>
+</head>
+<body>
+
+<a href="#story-grid" class="visually-hidden" style="position:absolute;left:-9999px;top:8px;z-index:100;background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:2px;font-family:var(--font-mono);font-size:13px;text-decoration:none;">Skip to story grid</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a href="index.html" class="site-header-wordmark">Contour Lines Studio</a>
+    <a href="index.html" class="site-header-back" aria-label="Back to studio homepage">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+        <path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Back to Studio
+    </a>
+  </div>
+</header>
+
+<main>
+  <section class="page-intro">
+    <div class="wrap">
+      <p class="page-intro-eyebrow">World Bank Group / GFDRR / GWSP</p>
+      <h1>Immersive Stories Archive</h1>
+      <p>More than 15 immersive stories and StoryMaps produced for the World Bank Group, documenting climate resilience, water security, disaster risk management, and fragile-state challenges across 5 regions.</p>
+    </div>
+  </section>
+
+  <div class="filter-bar">
+    <div class="wrap">
+      <div class="platform-toggle" role="group" aria-label="Filter by platform">
+        <button class="platform-btn is-active" data-platform="all" type="button" aria-pressed="true">All formats</button>
+        <button class="platform-btn" data-platform="shorthand" type="button" aria-pressed="false">Shorthand Immersive</button>
+        <button class="platform-btn" data-platform="arcgis" type="button" aria-pressed="false">ArcGIS StoryMaps</button>
+      </div>
+      <div class="filter-bar-inner" role="group" aria-label="Filter by theme">
+        <span class="filter-bar-label">Filter</span>
+        <button class="filter-btn is-active" data-filter="all" type="button">All <span aria-hidden="true">(15)</span></button>
+        <button class="filter-btn" data-filter="water" type="button">Water Security</button>
+        <button class="filter-btn" data-filter="urban-flood" type="button">Urban Flood</button>
+        <button class="filter-btn" data-filter="drm" type="button">DRM / Resilience</button>
+        <button class="filter-btn" data-filter="fcv" type="button">Fragility &amp; Conflict</button>
+        <button class="filter-btn" data-filter="climate" type="button">Climate &amp; Environment</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap" id="story-grid">
+    <ul class="story-grid" role="list" aria-label="World Bank immersive stories">
+
+
+      <!-- Story 1 -->
+      <li class="story-tile" data-platform="shorthand" data-themes="urban-flood drm climate" role="listitem">
+        <a href="https://www.worldbank.org/en/news/immersive-story/2026/06/03/senegals-journey-to-resilience"
+           target="_blank" rel="noopener noreferrer" class="story-tile-link" aria-label="Building a Resilient Future in Senegal">
+          <div class="story-thumb">
+            <img src="img/storymaps/senegal.jpg" alt="Building a Resilient Future in Senegal — Protecting Lives, Infrastructure, and Livelihoods" loading="lazy">
+            <div class="story-thumb-placeholder" aria-hidden="true">
+              <svg viewBox="0 0 48 48" fill="none"><path d="M24 8C15.2 8 8 15.2 8 24s7.2 16 16 16 16-7.2 16-16S32.8 8 24 8Z" stroke="currentColor" stroke-width="1.4"/><path d="M16 24c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            </div>
+            <span class="story-platform">Shorthand</span>
+          </div>
+          <div class="story-meta">
+            <span class="story-date">June 2026</span>
+            <h2 class="story-title">Building a Resilient Future in Senegal — Protecting Lives, Infrastructure, and Livelihoods</h2>
+            <div class="story-tags">
+              <span class="story-tag">Urban Resilience</span>
+              <span class="story-tag">Coastal Erosion</span>
+            </div>
+            <p class="story-desc">Senegal's coastal and urban resilience agenda, from Dakar's flood management investments to community-level livelihoods protection on eroding shorelines.</p>
+          </div>
+        </a>
+      </li>
+
+      <!-- Story 2 -->
+      <li class="story-tile" data-platform="shorthand" data-themes="fcv drm" role="listitem">
+        <a href="https://www.worldbank.org/en/news/immersive-story/2026/06/03/disaster-fcv-nexus"
+           target="_blank" rel="noopener noreferrer" class="story-tile-link" aria-label="Disaster's Multiplier Effect">
+          <div class="story-thumb">
+            <img src="img/storymaps/disaster-fcv.jpg" alt="Disaster's Multiplier Effect: How Conflict Amplifies Economic Downturn" loading="lazy">
+            <div class="story-thumb-placeholder" aria-hidden="true">
+              <svg viewBox="0 0 48 48" fill="none"><path d="M24 8C15.2 8 8 15.2 8 24s7.2 16 16 16 16-7.2 16-16S32.8 8 24 8Z" stroke="currentColor" stroke-width="1.4"/><path d="M16 24c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            </div>
+            <span class="story-platform">Shorthand</span>
+          </div>
+          <div class="story-meta">
+            <span class="story-date">June 2026</span>
+            <h2 class="story-title">Disaster's Multiplier Effect: How Conflict Amplifies Economic Downturn</h2>
+            <div class="story-tags">
+              <span class="story-tag">Fragility &amp; Conflict</span>
+              <span class="story-tag">Rapid Risk Analytics</span>
+            </div>
+            <p class="story-desc">Rapid analytics on the compounding economic losses when natural disasters strike countries already weakened by conflict and institutional fragility.</p>
+          </div>
+        </a>
+      </li>
+
+      <!-- Story 3 -->
+      <li class="story-tile" data-platform="shorthand" data-themes="drm climate" role="listitem">
+        <a href="https://www.worldbank.org/en/news/immersive-story/2026/06/01/jamaica-disaster-resilience"
+           target="_blank" rel="noopener noreferrer" class="story-tile-link" aria-label="Building a Resilient Future in Jamaica">
+          <div class="story-thumb">
+            <img src="img/storymaps/jamaica.jpg" alt="Building a Resilient Future in Jamaica — Decoupling Climate Shocks from Economic Collapse" loading="lazy">
+            <div class="story-thumb-placeholder" aria-hidden="true">
+              <svg viewBox="0 0 48 48" fill="none"><path d="M24 8C15.2 8 8 15.2 8 24s7.2 16 16 16 16-7.2 16-16S32.8 8 24 8Z" stroke="currentColor" stroke-width="1.4"/><path d="M16 24c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            </div>
+            <span class="story-platform">Shorthand</span>
+          </div>
+          <div class="story-meta">
+            <span class="story-date">June 2026</span>
+            <h2 class="story-title">Building a Resilient Future in Jamaica — Decoupling Climate Shocks from Economic Collapse</h2>
+            <div class="story-tags">
+              <span class="story-tag">Caribbean</span>
+              <span class="story-tag">Risk Financing</span>
+              <span class="story-tag">DRM</span>
+            </div>
+            <p class="story-desc">Jamaica's strategy for breaking the cycle of climate-driven economic setbacks through parametric insurance and resilient infrastructure investment.</p>
+          </div>
+        </a>
+      </li>
+
+      <!-- Story 4 -->
+      <li class="story-tile" data-platform="shorthand" data-themes="urban-flood drm climate" role="listitem">
+        <a href="https://www.worldbank.org/en/news/immersive-story/2026/04/03/cities-under-water-charting-a-resilient-future-in-an-urbanizing-world"
+           target="_blank" rel="noopener noreferrer" class="story-tile-link" aria-label="Cities Under Water">
+          <div class="story-thumb">
+            <img src="img/storymaps/cities-under-water.jpg" alt="Cities Under Water — Charting a Resilient Future in an Urbanizing World" loading="lazy">
+            <div class="story-thumb-placeholder" aria-hidden="true">
+              <svg viewBox="0 0 48 48" fill="none"><path d="M24 8C15.2 8 8 15.2 8 24s7.2 16 16 16 16-7.2 16-16S32.8 8 24 8Z" stroke="currentColor" stroke-width="1.4"/><path d="M16 24c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            </div>
+            <span class="story-platform">Shorthand</span>
+          </div>
+          <div class="story-meta">
+            <span class="story-date">April 2026</span>
+            <h2 class="story-title">Cities Under Water — Charting a Resilient Future in an Urbanizing World</h2>
+            <div class="story-tags">
+              <span class="story-tag">Urban Flood Risk</span>
+              <span class="story-tag">Resilient Infrastructure</span>
+            </div>
+            <p class="story-desc">How coastal and inland cities can adapt flood management to rising urbanization and intensifying precipitation driven by climate change.</p>
+          </div>
+        </a>
+      </li>
+
+      <!-- Story 5 -->
+      <li class="story-tile" data-platform="shorthand" data-themes="drm" role="listitem">
+        <a href="https://www.worldbank.org/en/news/immersive-story/2026/02/19/resilient-learning-environments-a-global-pathway-to-safer-schools"
+           target="_blank" rel="noopener noreferrer" class="story-tile-link" aria-label="Resilient Learning Environments">
+          <div class="story-thumb">
+            <img src="img/storymaps/school-safety.jpg" alt="Resilient Learning Environments — A Global Pathway to Safer Schools" loading="lazy">
+            <div class="story-thumb-placeholder" aria-hidden="true">
+              <svg viewBox="0 0 48 48" fill="none"><path d="M24 8C15.2 8 8 15.2 8 24s7.2 16 16 16 16-7.2 16-16S32.8 8 24 8Z" stroke="currentColor" stroke-width="1.4"/><path d="M16 24c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            </div>
+            <span class="story-platform">Shorthand</span>
+          </div>
+          <div class="story-meta">
+            <span class="story-date">February 2026</span>
+            <h2 class="story-title">Resilient Learning Environments — A Global Pathway to Safer Schools</h2>
+            <div class="story-tags">
+              <span class="story-tag">School Safety</span>
+              <span class="story-tag">DRM</span>
+            </div>
+            <p class="story-desc">The global case for building school safety into disaster risk management, documenting retrofitting programs that protect children from earthquakes and floods.</p>
+          </div>
+        </a>
+      </li>
+
+      <!-- Story 6 -->
+      <li class="story-tile" data-platform="shorthand" data-themes="water drm" role="listitem">
+        <a href="https://www.worldbank.org/en/news/immersive-story/2025/09/30/global-water-security-and-sanitation-partnership"
+           target="_blank" rel="noopener noreferrer" class="story-tile-link" aria-label="Water Works — Benin and Pakistan">
+          <div class="story-thumb">
+            <img src="img/storymaps/water-works.jpg" alt="Water Works — How Smarter Systems are Changing Lives in Benin and Pakistan" loading="lazy">
+            <div class="story-thumb-placeholder" aria-hidden="true">
+              <svg viewBox="0 0 48 48" fill="none"><path d="M24 8C15.2 8 8 15.2 8 24s7.2 16 16 16 16-7.2 16-16S32.8 8 24 8Z" stroke="currentColor" stroke-width="1.4"/><path d="M16 24c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            </div>
+            <span class="story-platform">Shorthand</span>
+          </div>
+          <div class="story-meta">
+            <span class="story-date">September 2025</span>
+            <h2 class="story-title">Water Works — How Smarter Systems are Changing Lives in Benin and Pakistan</h2>
+            <div class="story-tags">
+              <span class="story-tag">Water Systems</span>
+              <span class="story-tag">Livelihoods</span>
+            </div>
+            <p class="story-desc">Field-level evidence from Benin and Pakistan showing how improved water governance and infrastructure directly lift household outcomes.</p>
+          </div>
+        </a>
+      </li>
+
+      <!-- Story 7 -->
+      <li class="story-tile" data-platform="arcgis" data-themes="climate drm" role="listitem">
+        <a href="https://storymaps.arcgis.com/stories/2c6ae4e418ba47608bc3d71c8a7b490c"
+           target="_blank" rel="noopener noreferrer" class="story-tile-link" aria-label="Our Planet, Our Prosperity">
+          <div class="story-thumb">
+            <img src="img/storymaps/natural-capital.jpg" alt="Our Planet, Our Prosperity — Rethinking Development for a Livable Future" loading="lazy">
+            <div class="story-thumb-placeholder" aria-hidden="true">
+              <svg viewBox="0 0 48 48" fill="none"><path d="M24 8C15.2 8 8 15.2 8 24s7.2 16 16 16 16-7.2 16-16S32.8 8 24 8Z" stroke="currentColor" stroke-width="1.4"/><path d="M16 24c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            </div>
+            <span class="story-platform">ArcGIS StoryMap</span>
+          </div>
+          <div class="story-meta">
+            <span class="story-date">September 2025</span>
+            <h2 class="story-title">Our Planet, Our Prosperity — Rethinking Development for a Livable Future</h2>
+            <div class="story-tags">
+              <span class="story-tag">Natural Capital</span>
+              <span class="story-tag">Green Economy</span>
+            </div>
+            <p class="story-desc">The World Bank Chief Economist Office's case for integrating natural capital into development accounting and GDP measurements.</p>
+          </div>
+        </a>
+      </li>
+
+      <!-- Story 8 -->
+      <li class="story-tile" data-platform="arcgis" data-themes="water climate" role="listitem">
+        <a href="https://storymaps.arcgis.com/stories/f97e02a6424b4f9f98f144105d060f81"
+           target="_blank" rel="noopener noreferrer" class="story-tile-link" aria-label="Treated, Trusted, Tapped — Water Reuse">
+          <div class="story-thumb">
+            <img src="img/storymaps/water-reuse.jpg" alt="Treated, Trusted, Tapped — The Case for Water Reuse" loading="lazy">
+            <div class="story-thumb-placeholder" aria-hidden="true">
+              <svg viewBox="0 0 48 48" fill="none"><path d="M24 8C15.2 8 8 15.2 8 24s7.2 16 16 16 16-7.2 16-16S32.8 8 24 8Z" stroke="currentColor" stroke-width="1.4"/><path d="M16 24c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            </div>
+            <span class="story-platform">ArcGIS StoryMap</span>
+          </div>
+          <div class="story-meta">
+            <span class="story-date">July 2025</span>
+            <h2 class="story-title">Treated, Trusted, Tapped — The Case for Water Reuse</h2>
+            <div class="story-tags">
+              <span class="story-tag">Water Security</span>
+              <span class="story-tag">Circular Economy</span>
+            </div>
+            <p class="story-desc">The global case for treated wastewater as a reliable water source, exploring trust barriers and successful reuse programs across regions.</p>
+          </div>
+        </a>
+      </li>
+
+      <!-- Story 9 -->
+      <li class="story-tile" data-platform="shorthand" data-themes="urban-flood drm" role="listitem">
+        <a href="https://www.worldbank.org/en/news/immersive-story/2025/06/16/gfdrr-engagement-with-tanzania"
+           target="_blank" rel="noopener noreferrer" class="story-tile-link" aria-label="A Decade of Partnership — Tanzania">
+          <div class="story-thumb">
+            <img src="img/storymaps/tanzania.jpg" alt="A Decade of Partnership — Working Together for a More Resilient Tanzania" loading="lazy">
+            <div class="story-thumb-placeholder" aria-hidden="true">
+              <svg viewBox="0 0 48 48" fill="none"><path d="M24 8C15.2 8 8 15.2 8 24s7.2 16 16 16 16-7.2 16-16S32.8 8 24 8Z" stroke="currentColor" stroke-width="1.4"/><path d="M16 24c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            </div>
+            <span class="story-platform">Shorthand</span>
+          </div>
+          <div class="story-meta">
+            <span class="story-date">June 2025</span>
+            <h2 class="story-title">A Decade of Partnership — Working Together for a More Resilient Tanzania</h2>
+            <div class="story-tags">
+              <span class="story-tag">Disaster Resilience</span>
+              <span class="story-tag">Urban Flood Risk</span>
+            </div>
+            <p class="story-desc">Ten years of GFDRR partnership in Tanzania, tracing how sustained engagement has strengthened flood and disaster preparedness in Dar es Salaam.</p>
+          </div>
+        </a>
+      </li>
+
+      <!-- Story 10 -->
+      <li class="story-tile" data-platform="shorthand" data-themes="climate drm" role="listitem">
+        <a href="https://www.worldbank.org/en/news/immersive-story/2024/06/04/climate-resilient-irrigation-game-changers"
+           target="_blank" rel="noopener noreferrer" class="story-tile-link" aria-label="Climate-Resilient Irrigation">
+          <div class="story-thumb">
+            <img src="img/storymaps/irrigation.jpg" alt="Transforming Lives Through Climate-Resilient Irrigation" loading="lazy">
+            <div class="story-thumb-placeholder" aria-hidden="true">
+              <svg viewBox="0 0 48 48" fill="none"><path d="M24 8C15.2 8 8 15.2 8 24s7.2 16 16 16 16-7.2 16-16S32.8 8 24 8Z" stroke="currentColor" stroke-width="1.4"/><path d="M16 24c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            </div>
+            <span class="story-platform">Shorthand</span>
+          </div>
+          <div class="story-meta">
+            <span class="story-date">June 2024</span>
+            <h2 class="story-title">Transforming Lives Through Climate-Resilient Irrigation</h2>
+            <div class="story-tags">
+              <span class="story-tag">Climate</span>
+              <span class="story-tag">Agriculture</span>
+            </div>
+            <p class="story-desc">How modernized irrigation systems protect rural livelihoods from climate shocks while reducing water waste in water-stressed regions.</p>
+          </div>
+        </a>
+      </li>
+
+      <!-- Story 11 -->
+      <li class="story-tile" data-platform="arcgis" data-themes="water climate" role="listitem">
+        <a href="https://storymaps.arcgis.com/stories/438754236b2e41d99c6e88dd0ec14f34"
+           target="_blank" rel="noopener noreferrer" class="story-tile-link" aria-label="Closing the Financial Gap — Water Security">
+          <div class="story-thumb">
+            <img src="img/storymaps/water-finance.jpg" alt="Closing the Financial Gap — The Quest for Water Security" loading="lazy">
+            <div class="story-thumb-placeholder" aria-hidden="true">
+              <svg viewBox="0 0 48 48" fill="none"><path d="M24 8C15.2 8 8 15.2 8 24s7.2 16 16 16 16-7.2 16-16S32.8 8 24 8Z" stroke="currentColor" stroke-width="1.4"/><path d="M16 24c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            </div>
+            <span class="story-platform">ArcGIS StoryMap</span>
+          </div>
+          <div class="story-meta">
+            <span class="story-date">May 2024</span>
+            <h2 class="story-title">Closing the Financial Gap — The Quest for Water Security</h2>
+            <div class="story-tags">
+              <span class="story-tag">Water Finance</span>
+              <span class="story-tag">Investment</span>
+            </div>
+            <p class="story-desc">The investment gap between current water infrastructure spending and what universal water security would require, mapped across income groups.</p>
+          </div>
+        </a>
+      </li>
+
+      <!-- Story 12 -->
+      <li class="story-tile" data-platform="arcgis" data-themes="urban-flood drm" role="listitem">
+        <a href="https://storymaps.arcgis.com/stories/2b69b33c3c75482b86ec985e1dca6f49"
+           target="_blank" rel="noopener noreferrer" class="story-tile-link" aria-label="Head Above Water — São Tomé and Príncipe">
+          <div class="story-thumb">
+            <img src="img/storymaps/sao-tome.jpg" alt="Head Above Water — São Tomé and Príncipe's Path to Flood Resilience" loading="lazy">
+            <div class="story-thumb-placeholder" aria-hidden="true">
+              <svg viewBox="0 0 48 48" fill="none"><path d="M24 8C15.2 8 8 15.2 8 24s7.2 16 16 16 16-7.2 16-16S32.8 8 24 8Z" stroke="currentColor" stroke-width="1.4"/><path d="M16 24c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            </div>
+            <span class="story-platform">ArcGIS StoryMap</span>
+          </div>
+          <div class="story-meta">
+            <span class="story-date">December 2023</span>
+            <h2 class="story-title">Head Above Water — São Tomé and Príncipe's Path to Flood Resilience</h2>
+            <div class="story-tags">
+              <span class="story-tag">Urban Flood Risk</span>
+              <span class="story-tag">DRM</span>
+            </div>
+            <p class="story-desc">The first navigable flood risk visualization for the archipelago, mapping neighborhood-level exposure for policymakers and urban planners.</p>
+          </div>
+        </a>
+      </li>
+
+      <!-- Story 13 -->
+      <li class="story-tile" data-platform="shorthand" data-themes="drm climate" role="listitem">
+        <a href="https://www.worldbank.org/en/news/immersive-story/2023/12/04/international-development-association-ida-a-catalyst-for-development"
+           target="_blank" rel="noopener noreferrer" class="story-tile-link" aria-label="IDA — A Catalyst for Development">
+          <div class="story-thumb">
+            <img src="img/storymaps/ida-catalyst.jpg" alt="International Development Association — A Catalyst for Development" loading="lazy">
+            <div class="story-thumb-placeholder" aria-hidden="true">
+              <svg viewBox="0 0 48 48" fill="none"><path d="M24 8C15.2 8 8 15.2 8 24s7.2 16 16 16 16-7.2 16-16S32.8 8 24 8Z" stroke="currentColor" stroke-width="1.4"/><path d="M16 24c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            </div>
+            <span class="story-platform">Shorthand</span>
+          </div>
+          <div class="story-meta">
+            <span class="story-date">December 2023</span>
+            <h2 class="story-title">IDA — A Catalyst for Development</h2>
+            <div class="story-tags">
+              <span class="story-tag">Development Finance</span>
+            </div>
+            <p class="story-desc">Five decades of IDA lending documented through the lens of the communities and countries transformed by its investments.</p>
+          </div>
+        </a>
+      </li>
+
+      <!-- Story 14 -->
+      <li class="story-tile" data-platform="shorthand" data-themes="water climate" role="listitem">
+        <a href="https://www.worldbank.org/en/news/immersive-story/2023/09/12/droughts-and-deficits-the-global-impacts"
+           target="_blank" rel="noopener noreferrer" class="story-tile-link" aria-label="Droughts and Deficits">
+          <div class="story-thumb">
+            <img src="img/storymaps/droughts-deficits.jpg" alt="Droughts and Deficits — The Impact of Water Scarcity on Economic Growth" loading="lazy">
+            <div class="story-thumb-placeholder" aria-hidden="true">
+              <svg viewBox="0 0 48 48" fill="none"><path d="M24 8C15.2 8 8 15.2 8 24s7.2 16 16 16 16-7.2 16-16S32.8 8 24 8Z" stroke="currentColor" stroke-width="1.4"/><path d="M16 24c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            </div>
+            <span class="story-platform">Shorthand</span>
+          </div>
+          <div class="story-meta">
+            <span class="story-date">September 2023</span>
+            <h2 class="story-title">Droughts and Deficits — The Impact of Water Scarcity on Economic Growth</h2>
+            <div class="story-tags">
+              <span class="story-tag">Water Scarcity</span>
+              <span class="story-tag">Climate</span>
+            </div>
+            <p class="story-desc">The economic cost of water scarcity is measured globally, linking drought patterns to GDP losses in water-stressed economies.</p>
+          </div>
+        </a>
+      </li>
+
+      <!-- Story 15 -->
+      <li class="story-tile" data-platform="shorthand" data-themes="water fcv" role="listitem">
+        <a href="https://www.worldbank.org/en/news/immersive-story/2023/04/25/water-security-and-fragility-insights-from-south-sudan"
+           target="_blank" rel="noopener noreferrer" class="story-tile-link" aria-label="Water Security and Fragility — South Sudan">
+          <div class="story-thumb">
+            <!-- Replace with real screenshot: img/storymaps/south-sudan.jpg -->
+            <img src="img/storymaps/south-sudan.jpg" alt="Water Security and Fragility — Insights from South Sudan" loading="lazy">
+            <div class="story-thumb-placeholder" aria-hidden="true">
+              <svg viewBox="0 0 48 48" fill="none"><path d="M24 8C15.2 8 8 15.2 8 24s7.2 16 16 16 16-7.2 16-16S32.8 8 24 8Z" stroke="currentColor" stroke-width="1.4"/><path d="M16 24c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            </div>
+            <span class="story-platform">Shorthand</span>
+          </div>
+          <div class="story-meta">
+            <span class="story-date">April 2023</span>
+            <h2 class="story-title">Water Security and Fragility — Insights from South Sudan</h2>
+            <div class="story-tags">
+              <span class="story-tag">Water Security</span>
+              <span class="story-tag">Fragility &amp; Conflict</span>
+            </div>
+            <p class="story-desc">How water insecurity and state fragility interact in South Sudan, where chronic floods and droughts compound the legacy of conflict.</p>
+          </div>
+        </a>
+      </li>
+
+    </ul>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="site-footer-row">
+      <p>&copy; Contour Lines &mdash; Yann Kerblat &mdash; Paris &mdash; 2026</p>
+      <a href="index.html" style="font-family:var(--font-mono);font-size:11px;color:var(--color-text-secondary);text-decoration:none;letter-spacing:0.04em;text-transform:uppercase;">
+        Back to Studio
+      </a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ── Touch device detection ─────────────────────────────
+  // On touch devices, descriptions are always visible (CSS handles it);
+  // we also enable tap-to-toggle as an additional affordance.
+  var isTouch = !window.matchMedia('(hover: hover)').matches;
+  if (isTouch) {
+    document.body.classList.add('touch-device');
+    // Tap to toggle description on/off on any viewport where hover isn't available
+    document.querySelectorAll('.story-tile').forEach(function(tile){
+      var link = tile.querySelector('.story-tile-link');
+      tile.addEventListener('click', function(e){
+        // Only intercept single taps for description reveal — let full-detail link work
+        if (!tile.classList.contains('desc-visible')){
+          e.preventDefault();
+          // Close any other open tiles
+          document.querySelectorAll('.story-tile.desc-visible').forEach(function(t){
+            t.classList.remove('desc-visible');
+          });
+          tile.classList.add('desc-visible');
+        }
+        // If already open, fall through naturally to the link href
+      });
+    });
+  }
+
+  // ── Filter logic ───────────────────────────────────────
+  // Platform (All / Shorthand / ArcGIS) and theme filters combine:
+  // a tile shows only if it matches BOTH the active platform and theme.
+  var filterBtns = document.querySelectorAll('.filter-btn');
+  var platformBtns = document.querySelectorAll('.platform-btn');
+  var tiles = document.querySelectorAll('.story-tile');
+  var activeTheme = 'all';
+  var activePlatform = 'all';
+
+  function applyFilters(){
+    tiles.forEach(function(tile){
+      var themes = (tile.getAttribute('data-themes') || '').split(' ');
+      var platform = tile.getAttribute('data-platform') || '';
+      var themeOk = activeTheme === 'all' || themes.indexOf(activeTheme) >= 0;
+      var platformOk = activePlatform === 'all' || platform === activePlatform;
+      tile.classList.toggle('is-hidden', !(themeOk && platformOk));
+    });
+  }
+
+  filterBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      activeTheme = btn.getAttribute('data-filter');
+      filterBtns.forEach(function(b){ b.classList.remove('is-active'); });
+      btn.classList.add('is-active');
+      applyFilters();
+    });
+  });
+
+  platformBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      activePlatform = btn.getAttribute('data-platform');
+      platformBtns.forEach(function(b){
+        b.classList.remove('is-active');
+        b.setAttribute('aria-pressed', 'false');
+      });
+      btn.classList.add('is-active');
+      btn.setAttribute('aria-pressed', 'true');
+      applyFilters();
+    });
+  });
+
+  // ── Image placeholder fallback ─────────────────────────
+  // When an img fails to load, show the SVG placeholder inside the slot.
+  document.querySelectorAll('.story-thumb img').forEach(function(img){
+    img.addEventListener('error', function(){
+      var placeholder = img.parentNode.querySelector('.story-thumb-placeholder');
+      if (placeholder) placeholder.style.display = 'flex';
+      img.style.display = 'none';
+    });
+    // If image is already broken on load (e.g., cached 404)
+    if (img.complete && img.naturalWidth === 0){
+      img.dispatchEvent(new Event('error'));
+    }
+  });
+</script>
+</body>
+</html>
