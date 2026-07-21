@@ -327,6 +327,13 @@
     transition:border-color 0.3s ease, box-shadow 0.3s ease;
     background-color:var(--paper-deep);
   }
+  /* Real project screenshot: fills the tile and covers the generated SVG art.
+     If the image file is missing, onerror removes the element and the SVG
+     placeholder art underneath shows instead — safe to deploy before images exist. */
+  .thumb-img{
+    position:absolute; inset:0; width:100%; height:100%;
+    object-fit:cover; z-index:1; display:block;
+  }
   .work-thumb::before{
     content:''; position:absolute; inset:0;
     background:radial-gradient(ellipse 140% 100% at 15% 10%, rgba(139,94,60,0.12), transparent 60%);
@@ -403,10 +410,33 @@
     font-family:var(--font-mono); font-size:12px; letter-spacing:0.1em; text-transform:uppercase;
     color:var(--slate); text-align:center; margin:0 0 44px;
   }
-  .client-strip{ display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:48px 64px; }
+  .client-strip{
+    display:flex; flex-wrap:wrap; justify-content:center; align-items:center;
+    gap:36px 56px; max-width:1040px; margin:0 auto;
+  }
   .client-logo{
-    font-family:var(--font-mono); font-size:14.5px; letter-spacing:0.04em; text-transform:uppercase;
-    color:var(--color-text-secondary); text-align:center; opacity:0.85;
+    display:flex; align-items:center; justify-content:center;
+    min-height:56px; min-width:120px; flex:0 0 auto;
+  }
+  .client-logo img{
+    max-height:38px; max-width:150px; width:auto; height:auto; display:block;
+    filter:grayscale(1); opacity:0.62;
+    transition:filter 0.2s ease, opacity 0.2s ease;
+  }
+  .client-logo:hover img{ filter:grayscale(0); opacity:1; }
+  /* Dark mode: most institutional logos are dark-on-light; invert keeps them legible.
+     If a specific logo inverts badly, supply a light variant and drop this rule. */
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]) .client-logo img{ filter:grayscale(1) invert(1); }
+    :root:not([data-theme="light"]) .client-logo:hover img{ filter:grayscale(1) invert(1); opacity:1; }
+  }
+  [data-theme="dark"] .client-logo img{ filter:grayscale(1) invert(1); }
+  [data-theme="dark"] .client-logo:hover img{ filter:grayscale(1) invert(1); opacity:1; }
+  /* Text fallback — used until a real logo file exists at img/logos/<name>.png */
+  .client-logo-name{ display:none; }
+  .client-logo.logo-fallback .client-logo-name{
+    display:block; font-family:var(--font-mono); font-size:13.5px; letter-spacing:0.04em;
+    text-transform:uppercase; color:var(--color-text-secondary); text-align:center; opacity:0.85;
   }
 
   /* contact form */
@@ -994,15 +1024,51 @@
     <div class="wrap">
       <p>Trusted by</p>
       <div class="client-strip">
-        <div class="client-logo">World Bank Group</div>
-        <div class="client-logo">GFDRR</div>
-        <div class="client-logo">IOM</div>
-        <div class="client-logo">Camber Collective</div>
-        <div class="client-logo">Dēmos</div>
-        <div class="client-logo">Gates Foundation</div>
-        <div class="client-logo">Smithsonian</div>
-        <div class="client-logo">Global Rights Compliance</div>
-        <div class="client-logo">BDO LLC</div>
+        <div class="client-logo">
+          <img src="img/logos/world-bank.png" alt="World Bank Group" loading="lazy"
+               onerror="this.parentNode.classList.add('logo-fallback'); this.remove();">
+          <span class="client-logo-name">World Bank Group</span>
+        </div>
+        <div class="client-logo">
+          <img src="img/logos/gfdrr.png" alt="GFDRR" loading="lazy"
+               onerror="this.parentNode.classList.add('logo-fallback'); this.remove();">
+          <span class="client-logo-name">GFDRR</span>
+        </div>
+        <div class="client-logo">
+          <img src="img/logos/iom.png" alt="IOM" loading="lazy"
+               onerror="this.parentNode.classList.add('logo-fallback'); this.remove();">
+          <span class="client-logo-name">IOM</span>
+        </div>
+        <div class="client-logo">
+          <img src="img/logos/camber-collective.png" alt="Camber Collective" loading="lazy"
+               onerror="this.parentNode.classList.add('logo-fallback'); this.remove();">
+          <span class="client-logo-name">Camber Collective</span>
+        </div>
+        <div class="client-logo">
+          <img src="img/logos/demos.png" alt="Dēmos" loading="lazy"
+               onerror="this.parentNode.classList.add('logo-fallback'); this.remove();">
+          <span class="client-logo-name">Dēmos</span>
+        </div>
+        <div class="client-logo">
+          <img src="img/logos/gates-foundation.png" alt="Gates Foundation" loading="lazy"
+               onerror="this.parentNode.classList.add('logo-fallback'); this.remove();">
+          <span class="client-logo-name">Gates Foundation</span>
+        </div>
+        <div class="client-logo">
+          <img src="img/logos/smithsonian.png" alt="Smithsonian" loading="lazy"
+               onerror="this.parentNode.classList.add('logo-fallback'); this.remove();">
+          <span class="client-logo-name">Smithsonian</span>
+        </div>
+        <div class="client-logo">
+          <img src="img/logos/global-rights-compliance.png" alt="Global Rights Compliance" loading="lazy"
+               onerror="this.parentNode.classList.add('logo-fallback'); this.remove();">
+          <span class="client-logo-name">Global Rights Compliance</span>
+        </div>
+        <div class="client-logo">
+          <img src="img/logos/bdo.png" alt="BDO LLC" loading="lazy"
+               onerror="this.parentNode.classList.add('logo-fallback'); this.remove();">
+          <span class="client-logo-name">BDO LLC</span>
+        </div>
       </div>
     </div>
   </section>
@@ -1013,6 +1079,7 @@
       <div class="carousel" id="work-carousel">
         <a href="#" class="work-item" data-case="sao-tome">
           <div class="work-thumb">
+            <img class="thumb-img" src="img/work/sao-tome.jpg" alt="" loading="lazy" onerror="this.remove();">
             <div class="work-summit" aria-hidden="true"><i></i><b class="r1"></b><b class="r2"></b></div>
             <svg viewBox="0 0 100 75" class="thumb-art" aria-hidden="true" preserveAspectRatio="none">
             <path d="M50 12 C 68 14, 80 26, 78 40 C 76 56, 60 65, 44 63 C 28 61, 18 48, 22 34 C 25 22, 36 11, 50 12 Z" fill="none" stroke="var(--contour)" stroke-width="1.1" opacity="0.8"/>
@@ -1031,6 +1098,7 @@
         </a>
         <a href="#" class="work-item" data-case="capital-mapping">
           <div class="work-thumb">
+            <img class="thumb-img" src="img/work/capital-mapping.jpg" alt="" loading="lazy" onerror="this.remove();">
             <div class="work-summit" aria-hidden="true"><i></i><b class="r1"></b><b class="r2"></b></div>
             <svg viewBox="0 0 100 75" class="thumb-art" aria-hidden="true" preserveAspectRatio="none">
             <line x1="10" y1="62" x2="92" y2="62" stroke="var(--line-strong)" stroke-width="1"/>
@@ -1051,6 +1119,7 @@
         </a>
         <a href="#" class="work-item" data-case="power-agenda">
           <div class="work-thumb">
+            <img class="thumb-img" src="img/work/power-agenda.jpg" alt="" loading="lazy" onerror="this.remove();">
             <div class="work-summit" aria-hidden="true"><i></i><b class="r1"></b><b class="r2"></b></div>
             <svg viewBox="0 0 100 75" class="thumb-art" aria-hidden="true" preserveAspectRatio="none">
             <line x1="22" y1="20" x2="50" y2="40" stroke="var(--line-strong)" stroke-width="1"/>
@@ -1075,6 +1144,7 @@
         </a>
         <a href="#" class="work-item" data-case="harvesting-conflict">
           <div class="work-thumb">
+            <img class="thumb-img" src="img/work/harvesting-conflict.jpg" alt="" loading="lazy" onerror="this.remove();">
             <div class="work-summit" aria-hidden="true"><i></i><b class="r1"></b><b class="r2"></b></div>
             <svg viewBox="0 0 100 75" class="thumb-art" aria-hidden="true" preserveAspectRatio="none">
             <path d="M50 12 C 68 14, 80 26, 78 40 C 76 56, 60 65, 44 63 C 28 61, 18 48, 22 34 C 25 22, 36 11, 50 12 Z" fill="none" stroke="var(--contour)" stroke-width="1.1" opacity="0.8"/>
@@ -1093,6 +1163,7 @@
         </a>
         <a href="#" class="work-item" data-case="wine-climate">
           <div class="work-thumb">
+            <img class="thumb-img" src="img/work/wine-climate.jpg" alt="" loading="lazy" onerror="this.remove();">
             <div class="work-summit" aria-hidden="true"><i></i><b class="r1"></b><b class="r2"></b></div>
             <svg viewBox="0 0 100 75" class="thumb-art" aria-hidden="true" preserveAspectRatio="none">
             <line x1="12" y1="62" x2="92" y2="62" stroke="var(--line-strong)" stroke-width="1"/>
