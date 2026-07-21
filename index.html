@@ -150,14 +150,37 @@
       radial-gradient(ellipse 900px 600px at 12% -8%, rgba(168,124,44,0.09), transparent 58%),
       radial-gradient(ellipse 760px 520px at 108% 18%, rgba(139,94,60,0.08), transparent 55%),
       radial-gradient(ellipse 820px 680px at 46% 115%, rgba(61,90,108,0.06), transparent 60%),
+      radial-gradient(ellipse 1400px 900px at 50% 40%, rgba(255,252,244,0.5), transparent 70%),
       var(--color-surface);
     color:var(--color-text-primary);
     font-family:var(--font-body);
     position:relative;
     transition:background-color 0.2s ease, color 0.2s ease;
   }
+  [data-theme="dark"] body{
+    background:
+      radial-gradient(ellipse 900px 600px at 12% -8%, rgba(168,124,44,0.05), transparent 58%),
+      radial-gradient(ellipse 760px 520px at 108% 18%, rgba(139,94,60,0.045), transparent 55%),
+      radial-gradient(ellipse 820px 680px at 46% 115%, rgba(61,90,108,0.04), transparent 60%),
+      radial-gradient(ellipse 1400px 900px at 50% 40%, rgba(0,0,0,0.35), transparent 70%),
+      var(--color-surface);
+  }
+  @media (prefers-color-scheme: dark){
+    body:not([data-theme="light"]){
+      background:
+        radial-gradient(ellipse 900px 600px at 12% -8%, rgba(168,124,44,0.05), transparent 58%),
+        radial-gradient(ellipse 760px 520px at 108% 18%, rgba(139,94,60,0.045), transparent 55%),
+        radial-gradient(ellipse 820px 680px at 46% 115%, rgba(61,90,108,0.04), transparent 60%),
+        radial-gradient(ellipse 1400px 900px at 50% 40%, rgba(0,0,0,0.35), transparent 70%),
+        var(--color-surface);
+    }
+  }
   .grain{
-    position:fixed; inset:0; pointer-events:none; z-index:50; opacity:0.05; mix-blend-mode:multiply;
+    position:fixed; inset:0; pointer-events:none; z-index:50; opacity:0.4; mix-blend-mode:multiply;
+  }
+  [data-theme="dark"] .grain{ opacity:0.12; mix-blend-mode:overlay; }
+  @media (prefers-color-scheme: dark){
+    html:not([data-theme="light"]) .grain{ opacity:0.12; mix-blend-mode:overlay; }
   }
   .regmark{ position:fixed; width:16px; height:16px; pointer-events:none; z-index:51; opacity:0.45; }
   .regmark svg{ width:100%; height:100%; }
@@ -320,7 +343,7 @@
     .card:hover{ transform:none; }
   }
 
-  .card h3{ font-family:var(--font-display); font-size:27px; font-weight:400; margin:0 0 12px; }
+  .card h3{ font-family:var(--font-display); font-size:27px; font-weight:400; font-style:italic; margin:0 0 12px; }
   .card p{ font-size:17px; line-height:1.6; color:var(--color-text-secondary); margin:0 0 18px; }
   .tags{ display:flex; flex-wrap:wrap; gap:8px; }
   .tags span{
@@ -333,9 +356,10 @@
   .work h2{ font-family:var(--font-display); font-size:40px; font-weight:400; margin:0 0 32px; }
   .carousel{
     display:flex; align-items:stretch; gap:24px; overflow-x:auto; overflow-y:visible;
-    scroll-snap-type:x mandatory; padding:4px 4px 18px; scrollbar-width:none;
+    scroll-snap-type:x mandatory; padding:16px 4px 56px; scrollbar-width:none;
   }
   .carousel::-webkit-scrollbar{ display:none; }
+  .work-item:nth-child(even){ transform:translateY(32px); }
   .work-item{
     position:relative; flex:0 0 320px; scroll-snap-align:start;
     display:block; text-decoration:none; color:inherit; cursor:pointer;
@@ -347,6 +371,12 @@
     border-color:var(--line); background:var(--paper-deep);
     box-shadow:0 14px 28px rgba(0,0,0,0.06);
   }
+  .work-item:nth-child(even):hover, .work-item:nth-child(even):focus-visible{
+    transform:translateY(28px);
+  }
+  .carousel:hover .work-item{ opacity:0.6; transition:opacity 0.3s ease, transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease; }
+  .carousel:hover .work-item:hover,
+  .carousel:hover .work-item:focus-visible{ opacity:1; }
   .work-item:hover .work-thumb, .work-item:focus-visible .work-thumb{
     border-color:var(--p-teal-300);
     box-shadow:0 0 0 3px rgba(95,163,154,0.22);
@@ -357,12 +387,17 @@
     transition:border-color 0.3s ease, box-shadow 0.3s ease;
     background-color:var(--paper-deep);
   }
-  /* Real project screenshot: fills the tile and covers the generated SVG art.
-     If the image file is missing, onerror removes the element and the SVG
-     placeholder art underneath shows instead — safe to deploy before images exist. */
+  /* Real project screenshot: shown in full (object-fit:contain — no cropping)
+     on a neutral backdrop, sitting above the generated SVG art. If the image
+     file is missing, onerror removes the element and the SVG placeholder art
+     underneath shows instead — safe to deploy before images exist. */
   .thumb-img{
     position:absolute; inset:0; width:100%; height:100%;
-    object-fit:cover; z-index:1; display:block;
+    object-fit:contain; z-index:1; display:block;
+    transform:scale(1); transition:transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .work-item:hover .thumb-img, .work-item:focus-visible .thumb-img{
+    transform:scale(1.04);
   }
   .work-thumb::before{
     content:''; position:absolute; inset:0;
@@ -406,16 +441,19 @@
   .carousel-nav button:active:not(:disabled){ transform:scale(0.92); border-color:var(--contour); }
   .carousel-nav button:disabled{ opacity:0.32; cursor:not-allowed; }
   .carousel-nav button:disabled:hover{ border-color:var(--line-strong); color:var(--ink); }
-  .carousel-dots{ display:flex; gap:7px; margin:0 4px; }
+  .carousel-dots{ display:flex; gap:8px; margin:0 4px; }
   .carousel-dots button{
-    position:relative; width:7px; height:7px; padding:0; border-radius:50%; border:none;
-    background:var(--line); cursor:pointer;
+    position:relative; width:28px; height:28px; padding:0; border-radius:7px;
+    border:1px solid var(--line-strong); background:var(--paper); cursor:pointer;
+    font-family:var(--font-mono); font-size:11px; color:var(--color-text-secondary);
+    display:flex; align-items:center; justify-content:center;
+    transition:border-color 0.15s ease, background 0.15s ease, color 0.15s ease, transform 0.1s ease;
   }
-  .carousel-dots button::before{
-    content:''; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
-    width:44px; height:44px;
+  .carousel-dots button:hover{ border-color:var(--contour); color:var(--contour); }
+  .carousel-dots button:active{ transform:scale(0.92); }
+  .carousel-dots button[aria-selected="true"]{
+    background:var(--contour); border-color:var(--contour); color:#FBF4EE; font-weight:600;
   }
-  .carousel-dots button[aria-selected="true"]{ background:var(--contour); width:18px; border-radius:4px; }
   .carousel-count{
     font-family:var(--font-mono); font-size:11px; color:var(--color-text-secondary);
     margin-right:auto; letter-spacing:0.04em;
@@ -424,12 +462,19 @@
   /* pull-quote — clean and conventional: paper background, a thin
      accent rule carrying the emphasis instead of a full-bleed block */
   .pullquote{ background:var(--color-surface); padding:96px 0; }
-  .pullquote .wrap{ border-left:3px solid var(--contour); padding-left:40px; }
+  .pullquote .wrap{ position:relative; border-left:3px solid var(--contour); padding-left:40px; }
+  .pullquote .wrap::before{
+    content:'\201C'; position:absolute; top:-64px; left:8px; z-index:0;
+    font-family:var(--font-display); font-size:180px; line-height:1; font-weight:600;
+    color:var(--contour); opacity:0.12; pointer-events:none; user-select:none;
+  }
   .pullquote blockquote{
+    position:relative; z-index:1;
     font-family:var(--font-display); font-style:italic; font-weight:500;
     font-size:38px; line-height:1.28; color:var(--color-text-primary); max-width:760px; margin:0;
   }
   .pullquote cite{
+    position:relative; z-index:1;
     display:block; margin-top:24px; font-family:var(--font-mono); font-style:normal;
     font-size:12px; text-transform:uppercase; letter-spacing:0.08em; color:var(--color-text-secondary);
   }
@@ -448,6 +493,11 @@
     display:flex; align-items:center; justify-content:center;
     min-height:56px; min-width:120px; flex:0 0 auto;
   }
+  .client-logo a{
+    display:flex; align-items:center; justify-content:center;
+    text-decoration:none; border-radius:4px;
+  }
+  .client-logo a:focus-visible{ outline:2px solid var(--color-focus-ring); outline-offset:4px; }
   .client-logo img{
     max-height:38px; max-width:150px; width:auto; height:auto; display:block;
     filter:grayscale(1); opacity:0.62;
@@ -483,18 +533,25 @@
     font-family:var(--font-mono); font-size:12px; line-height:1.8; color:var(--color-text-secondary);
     padding-top:8px;
   }
-  .contact-ledger h4{
-    font-family:var(--font-display); font-size:20px; font-weight:500;
-    color:var(--color-text-primary); margin:0 0 16px;
+  .colophon-section{
+    padding-top:26px; margin-top:26px; border-top:1px solid var(--line-strong);
   }
-  .contact-ledger h4:not(:first-child){ margin-top:36px; }
-  .contact-ledger p{ margin:0; text-transform:uppercase; }
+  .colophon-section:first-child{ padding-top:0; margin-top:0; border-top:none; }
+  .contact-ledger h4{
+    font-family:var(--font-display); font-size:18px; font-weight:400; font-style:italic;
+    letter-spacing:0.01em;
+    color:var(--color-text-primary); margin:0 0 14px;
+  }
+  .contact-ledger p{ margin:0; text-transform:uppercase; letter-spacing:0.03em; }
   .contact-ledger a{
     color:var(--color-link); text-decoration:none; border-bottom:1px solid currentColor;
     text-transform:none;
   }
   .contact-ledger a:hover{ color:var(--contour); }
-  .studio-status{ margin-top:36px; border-top:1px solid var(--line); padding-top:24px; }
+  .colophon-stack{
+    font-family:var(--font-mono); font-size:10px; letter-spacing:0.04em;
+    color:var(--color-text-secondary); text-transform:none; opacity:0.8;
+  }
   .studio-status-row{
     display:flex; align-items:center; gap:8px; font-family:var(--font-mono);
     font-size:11px; text-transform:uppercase;
@@ -606,6 +663,27 @@
   /* studio / philosophy */
   .studio{ padding:120px 0 84px; }
   .studio-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:40px; }
+  .studio-emblem{ width:56px; height:56px; margin-bottom:20px; }
+  .studio-emblem svg{ width:100%; height:100%; overflow:visible; }
+  .emblem-spin{ transform-origin:28px 28px; animation:emblem-rotate 6s linear infinite; }
+  @keyframes emblem-rotate{ to{ transform:rotate(360deg); } }
+  .emblem-pulse{ transform-origin:center; animation:emblem-pulse 2.4s ease-in-out infinite; }
+  @keyframes emblem-pulse{
+    0%, 100%{ opacity:0.4; transform:scale(0.85); }
+    50%{ opacity:1; transform:scale(1.15); }
+  }
+  .emblem-ripple{
+    transform-origin:28px 28px; opacity:0;
+    animation:emblem-ripple 2.8s ease-out infinite;
+  }
+  @keyframes emblem-ripple{
+    0%{ transform:scale(0.4); opacity:0.9; }
+    100%{ transform:scale(1.6); opacity:0; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .emblem-spin, .emblem-pulse, .emblem-ripple{ animation:none; }
+    .emblem-ripple{ opacity:0.4; }
+  }
   .studio-grid h3{ font-family:var(--font-display); font-size:27px; font-weight:400; margin:0 0 16px; }
   .studio-grid p{ font-size:17px; line-height:1.65; color:var(--color-text-secondary); }
 
@@ -623,7 +701,7 @@
     width:26px; height:26px; border-radius:50%; background:var(--paper); border:1px solid var(--contour);
     font-family:var(--font-mono); font-size:11px; color:var(--contour); margin-bottom:16px;
   }
-  .process-step h4{ position:relative; z-index:1; font-family:var(--font-display); font-size:22px; font-weight:400; margin:0 0 10px; }
+  .process-step h4{ position:relative; z-index:1; font-family:var(--font-display); font-size:22px; font-weight:400; font-style:italic; margin:0 0 10px; }
   .process-step p{ position:relative; z-index:1; font-size:16px; line-height:1.55; color:var(--color-text-secondary); margin:0; }
 
   /* stats band */
@@ -647,6 +725,7 @@
     .contact-box h2{ font-size:28px; }
     .card h3, .studio-grid h3{ font-size:23px; }
     .pullquote{ padding:64px 0; }
+    .pullquote .wrap::before{ font-size:110px; top:-38px; left:2px; }
     .pullquote blockquote{ font-size:28px; }
     .topo-bg{ opacity:0.5; width:680px; height:540px; right:-180px; top:-60px; }
 
@@ -1055,49 +1134,67 @@
       <p>Trusted by</p>
       <div class="client-strip">
         <div class="client-logo">
+          <a href="https://www.worldbank.org" target="_blank" rel="noopener noreferrer" aria-label="World Bank Group website">
           <img src="img/logos/world-bank.png" alt="World Bank Group" loading="lazy"
                onerror="this.parentNode.classList.add('logo-fallback'); this.remove();">
           <span class="client-logo-name">World Bank Group</span>
+          </a>
         </div>
         <div class="client-logo">
+          <a href="https://www.gfdrr.org" target="_blank" rel="noopener noreferrer" aria-label="GFDRR website">
           <img src="img/logos/gfdrr.png" alt="GFDRR" loading="lazy"
                onerror="this.parentNode.classList.add('logo-fallback'); this.remove();">
           <span class="client-logo-name">GFDRR</span>
+          </a>
         </div>
         <div class="client-logo">
+          <a href="https://www.iom.int" target="_blank" rel="noopener noreferrer" aria-label="IOM website">
           <img src="img/logos/iom.png" alt="IOM" loading="lazy"
                onerror="this.parentNode.classList.add('logo-fallback'); this.remove();">
           <span class="client-logo-name">IOM</span>
+          </a>
         </div>
         <div class="client-logo">
+          <a href="https://cambercollective.com" target="_blank" rel="noopener noreferrer" aria-label="Camber Collective website">
           <img src="img/logos/camber-collective.png" alt="Camber Collective" loading="lazy"
                onerror="this.parentNode.classList.add('logo-fallback'); this.remove();">
           <span class="client-logo-name">Camber Collective</span>
+          </a>
         </div>
         <div class="client-logo">
+          <a href="https://www.demos.org" target="_blank" rel="noopener noreferrer" aria-label="Dēmos website">
           <img src="img/logos/demos.png" alt="Dēmos" loading="lazy"
                onerror="this.parentNode.classList.add('logo-fallback'); this.remove();">
           <span class="client-logo-name">Dēmos</span>
+          </a>
         </div>
         <div class="client-logo">
+          <a href="https://www.gatesfoundation.org" target="_blank" rel="noopener noreferrer" aria-label="Gates Foundation website">
           <img src="img/logos/gates-foundation.png" alt="Gates Foundation" loading="lazy"
                onerror="this.parentNode.classList.add('logo-fallback'); this.remove();">
           <span class="client-logo-name">Gates Foundation</span>
+          </a>
         </div>
         <div class="client-logo">
+          <a href="https://www.si.edu" target="_blank" rel="noopener noreferrer" aria-label="Smithsonian website">
           <img src="img/logos/smithsonian.png" alt="Smithsonian" loading="lazy"
                onerror="this.parentNode.classList.add('logo-fallback'); this.remove();">
           <span class="client-logo-name">Smithsonian</span>
+          </a>
         </div>
         <div class="client-logo">
+          <a href="https://globalrightscompliance.com" target="_blank" rel="noopener noreferrer" aria-label="Global Rights Compliance website">
           <img src="img/logos/global-rights-compliance.png" alt="Global Rights Compliance" loading="lazy"
                onerror="this.parentNode.classList.add('logo-fallback'); this.remove();">
           <span class="client-logo-name">Global Rights Compliance</span>
+          </a>
         </div>
         <div class="client-logo">
+          <a href="https://www.bdo.com" target="_blank" rel="noopener noreferrer" aria-label="BDO LLC website">
           <img src="img/logos/bdo.png" alt="BDO LLC" loading="lazy"
                onerror="this.parentNode.classList.add('logo-fallback'); this.remove();">
           <span class="client-logo-name">BDO LLC</span>
+          </a>
         </div>
       </div>
     </div>
@@ -1425,14 +1522,33 @@
   <section class="studio" id="studio">
     <div class="wrap studio-grid">
       <div>
+        <div class="studio-emblem studio-emblem-compass" aria-hidden="true">
+          <svg viewBox="0 0 56 56"><circle cx="28" cy="28" r="24" fill="none" stroke="var(--contour)" stroke-width="1.4" opacity="0.35"/><g class="emblem-spin"><line x1="28" y1="10" x2="28" y2="18" stroke="var(--contour)" stroke-width="2" stroke-linecap="round"/><line x1="28" y1="38" x2="28" y2="46" stroke="var(--p-teal-300)" stroke-width="2" stroke-linecap="round"/></g><circle cx="28" cy="28" r="4" fill="var(--contour)"/></svg>
+        </div>
         <h3>The Studio</h3>
         <p>Contour Lines is led by <strong>Yann Kerblat</strong>, a Paris-based information designer who spent over 15 years as a Disaster &amp; Climate Resilience Analyst for the World Bank and the UN before founding the studio. He holds a Master&rsquo;s in Data Visualization from Parsons School of Design. The studio works at the intersection of data, policy, and storytelling — helping organizations turn tangled, high-stakes data into interactive narratives that drive real-world decisions.</p>
       </div>
       <div>
+        <div class="studio-emblem studio-emblem-network" aria-hidden="true">
+          <svg viewBox="0 0 56 56">
+            <line x1="28" y1="28" x2="14" y2="14" stroke="var(--p-teal-300)" stroke-width="1.4" opacity="0.5"/>
+            <line x1="28" y1="28" x2="44" y2="16" stroke="var(--p-teal-300)" stroke-width="1.4" opacity="0.5"/>
+            <line x1="28" y1="28" x2="12" y2="42" stroke="var(--p-teal-300)" stroke-width="1.4" opacity="0.5"/>
+            <line x1="28" y1="28" x2="42" y2="44" stroke="var(--p-teal-300)" stroke-width="1.4" opacity="0.5"/>
+            <circle cx="28" cy="28" r="5" fill="var(--contour)"/>
+            <circle class="emblem-pulse" cx="14" cy="14" r="4" fill="var(--p-teal-300)"/>
+            <circle class="emblem-pulse" cx="44" cy="16" r="4" fill="var(--p-teal-300)" style="animation-delay:0.4s"/>
+            <circle class="emblem-pulse" cx="12" cy="42" r="4" fill="var(--p-teal-300)" style="animation-delay:0.8s"/>
+            <circle class="emblem-pulse" cx="42" cy="44" r="4" fill="var(--p-teal-300)" style="animation-delay:1.2s"/>
+          </svg>
+        </div>
         <h3>The Collective</h3>
         <p>Contour Lines operates as a collective. Depending on what a project demands, Yann draws on a network of specialized associates — data scientists, motion and interactive designers, photogrammetry and computer vision specialists, technical videographers, AI engineers, graphic designers — assembled around the scope of each engagement.</p>
       </div>
       <div>
+        <div class="studio-emblem studio-emblem-lens" aria-hidden="true">
+          <svg viewBox="0 0 56 56"><circle class="emblem-ripple" cx="28" cy="28" r="8" fill="none" stroke="var(--flag)" stroke-width="1.4"/><circle class="emblem-ripple" cx="28" cy="28" r="8" fill="none" stroke="var(--flag)" stroke-width="1.4" style="animation-delay:0.7s"/><circle class="emblem-ripple" cx="28" cy="28" r="8" fill="none" stroke="var(--flag)" stroke-width="1.4" style="animation-delay:1.4s"/><circle cx="28" cy="28" r="4" fill="var(--flag)"/></svg>
+        </div>
         <h3>Our Philosophy</h3>
         <p>Behind every number is a landscape of trade-offs, risks, and human consequence. Design, to us, isn&rsquo;t decoration for evidence — it&rsquo;s what gives that evidence enough clarity that it can&rsquo;t be ignored.</p>
       </div>
@@ -1506,16 +1622,23 @@
         </form>
       </div>
       <div class="contact-ledger">
-        <h4>Studio Lat/Long</h4>
-        <p>[ 48.8833&deg; N, 2.3167&deg; E ]<br>Arrondissement XVII<br>Paris, France</p>
-        <h4>Transmission Protocols</h4>
-        <p>Secure envelope: <a href="mailto:yann@contourlines.studio">yann@contourlines.studio</a></p>
-        <div class="studio-status">
-          <h4>Studio Status</h4>
+        <div class="colophon-section">
+          <h4>Studio</h4>
+          <p>11 Rue Dulong<br>Arrondissement XVII<br>Paris, France</p>
+        </div>
+        <div class="colophon-section">
+          <h4>Transmission</h4>
+          <p>Secure envelope: <a href="mailto:yann@contourlines.studio">yann@contourlines.studio</a></p>
+        </div>
+        <div class="colophon-section">
+          <h4>Status</h4>
           <div class="studio-status-row">
             <span id="status-indicator-dot" class="status-dot"></span>
             <span id="status-indicator-text">Checking&hellip;</span>
           </div>
+        </div>
+        <div class="colophon-section">
+          <p class="colophon-stack">Shorthand &middot; Datawrapper &middot; Flourish &middot; QGIS &middot; Mapbox</p>
         </div>
       </div>
     </div>
@@ -1851,6 +1974,7 @@
         var dot = document.createElement('button');
         dot.type = 'button';
         dot.setAttribute('role', 'tab');
+        dot.textContent = String(i + 1);
         dot.setAttribute('aria-label', 'Go to project ' + (i + 1) + ' of ' + total);
         dot.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
         dot.addEventListener('click', function(){
