@@ -175,8 +175,10 @@
   }
   .story-tile:hover .story-thumb img, .story-tile:focus-visible .story-thumb img{ opacity:0.92; }
   .story-thumb-placeholder{
-    /* Shown when no image supplied and img fails to load */
-    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    /* Hidden by default; JS reveals it only if the image fails to load.
+       (Previously display:flex by default — which sat on top of and hid
+       successfully loaded images.) */
+    position:absolute; inset:0; display:none; align-items:center; justify-content:center;
     background:var(--color-surface-raised);
   }
   .story-thumb-placeholder svg{ width:36px; height:36px; opacity:0.3; }
@@ -268,8 +270,8 @@
 <main>
   <section class="page-intro">
     <div class="wrap">
-      <p class="page-intro-eyebrow">World Bank Group / GFDRR / GWSP / WACA</p>
-      <h1>Recent Immersive Stories</h1>
+      <p class="page-intro-eyebrow">World Bank Group / GFDRR / GWSP</p>
+      <h1>Immersive Stories Archive</h1>
       <p>More than 15 immersive stories and StoryMaps produced for the World Bank Group, documenting climate resilience, water security, disaster risk management, and fragile-state challenges across 5 regions.</p>
     </div>
   </section>
@@ -309,7 +311,7 @@
             <span class="story-platform">Shorthand</span>
           </div>
           <div class="story-meta">
-            <span class="story-date">July 2026</span>
+            <span class="story-date">June 2026</span>
             <h2 class="story-title">Building a Resilient Future in Senegal — Protecting Lives, Infrastructure, and Livelihoods</h2>
             <div class="story-tags">
               <span class="story-tag">Urban Resilience</span>
@@ -355,7 +357,7 @@
             <span class="story-platform">Shorthand</span>
           </div>
           <div class="story-meta">
-            <span class="story-date">May 2026</span>
+            <span class="story-date">June 2026</span>
             <h2 class="story-title">Building a Resilient Future in Jamaica — Decoupling Climate Shocks from Economic Collapse</h2>
             <div class="story-tags">
               <span class="story-tag">Caribbean</span>
@@ -414,7 +416,7 @@
       </li>
 
       <!-- Story 6 -->
-      <li class="story-tile" data-platform="shorthand" data-themes="water climate" role="listitem">
+      <li class="story-tile" data-platform="shorthand" data-themes="water drm" role="listitem">
         <a href="https://www.worldbank.org/en/news/immersive-story/2025/09/30/global-water-security-and-sanitation-partnership"
            target="_blank" rel="noopener noreferrer" class="story-tile-link" aria-label="Water Works — Benin and Pakistan">
           <div class="story-thumb">
@@ -437,7 +439,7 @@
       </li>
 
       <!-- Story 7 -->
-      <li class="story-tile" data-platform="arcgis" data-themes="climate water" role="listitem">
+      <li class="story-tile" data-platform="arcgis" data-themes="climate drm" role="listitem">
         <a href="https://storymaps.arcgis.com/stories/2c6ae4e418ba47608bc3d71c8a7b490c"
            target="_blank" rel="noopener noreferrer" class="story-tile-link" aria-label="Our Planet, Our Prosperity">
           <div class="story-thumb">
@@ -506,7 +508,7 @@
       </li>
 
       <!-- Story 10 -->
-      <li class="story-tile" data-platform="shorthand" data-themes="climate water" role="listitem">
+      <li class="story-tile" data-platform="shorthand" data-themes="climate drm" role="listitem">
         <a href="https://www.worldbank.org/en/news/immersive-story/2024/06/04/climate-resilient-irrigation-game-changers"
            target="_blank" rel="noopener noreferrer" class="story-tile-link" aria-label="Climate-Resilient Irrigation">
           <div class="story-thumb">
@@ -556,7 +558,7 @@
         <a href="https://storymaps.arcgis.com/stories/2b69b33c3c75482b86ec985e1dca6f49"
            target="_blank" rel="noopener noreferrer" class="story-tile-link" aria-label="Head Above Water — São Tomé and Príncipe">
           <div class="story-thumb">
-            <img src="img/storymaps/sao-tome.png" alt="Head Above Water — São Tomé and Príncipe's Path to Flood Resilience" loading="lazy">
+            <img src="img/storymaps/sao-tome.jpg" alt="Head Above Water — São Tomé and Príncipe's Path to Flood Resilience" loading="lazy">
             <div class="story-thumb-placeholder" aria-hidden="true">
               <svg viewBox="0 0 48 48" fill="none"><path d="M24 8C15.2 8 8 15.2 8 24s7.2 16 16 16 16-7.2 16-16S32.8 8 24 8Z" stroke="currentColor" stroke-width="1.4"/><path d="M16 24c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
             </div>
@@ -575,7 +577,7 @@
       </li>
 
       <!-- Story 13 -->
-      <li class="story-tile" data-platform="shorthand" data-themes="water climate" role="listitem">
+      <li class="story-tile" data-platform="shorthand" data-themes="drm climate" role="listitem">
         <a href="https://www.worldbank.org/en/news/immersive-story/2023/12/04/international-development-association-ida-a-catalyst-for-development"
            target="_blank" rel="noopener noreferrer" class="story-tile-link" aria-label="IDA — A Catalyst for Development">
           <div class="story-thumb">
@@ -620,7 +622,7 @@
       </li>
 
       <!-- Story 15 -->
-      <li class="story-tile" data-platform="shorthand" data-themes="water fcv urban-flood" role="listitem">
+      <li class="story-tile" data-platform="shorthand" data-themes="water fcv" role="listitem">
         <a href="https://www.worldbank.org/en/news/immersive-story/2023/04/25/water-security-and-fragility-insights-from-south-sudan"
            target="_blank" rel="noopener noreferrer" class="story-tile-link" aria-label="Water Security and Fragility — South Sudan">
           <div class="story-thumb">
@@ -725,12 +727,23 @@
   });
 
   // ── Image placeholder fallback ─────────────────────────
-  // When an img fails to load, show the SVG placeholder inside the slot.
+  // On load failure: first retry once with the alternate extension
+  // (.jpg ↔ .png), so images work regardless of which format was
+  // dropped into img/storymaps/. Only after both fail, show the
+  // SVG placeholder.
+  function showPlaceholder(img){
+    var placeholder = img.parentNode.querySelector('.story-thumb-placeholder');
+    if (placeholder) placeholder.style.display = 'flex';
+    img.style.display = 'none';
+  }
   document.querySelectorAll('.story-thumb img').forEach(function(img){
     img.addEventListener('error', function(){
-      var placeholder = img.parentNode.querySelector('.story-thumb-placeholder');
-      if (placeholder) placeholder.style.display = 'flex';
-      img.style.display = 'none';
+      if (!img.dataset.retried){
+        img.dataset.retried = '1';
+        if (/\.jpg$/i.test(img.src)){ img.src = img.src.replace(/\.jpg$/i, '.png'); return; }
+        if (/\.png$/i.test(img.src)){ img.src = img.src.replace(/\.png$/i, '.jpg'); return; }
+      }
+      showPlaceholder(img);
     });
     // If image is already broken on load (e.g., cached 404)
     if (img.complete && img.naturalWidth === 0){
