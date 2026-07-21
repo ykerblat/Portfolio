@@ -355,13 +355,12 @@
   .work{ padding:80px 0 64px; }
   .work h2{ font-family:var(--font-display); font-size:40px; font-weight:400; margin:0 0 32px; }
   .carousel{
-    display:flex; align-items:stretch; gap:24px; overflow-x:auto; overflow-y:visible;
-    scroll-snap-type:x mandatory; padding:16px 4px 56px; scrollbar-width:none;
+    display:flex; align-items:stretch; gap:28px; overflow-x:auto; overflow-y:visible;
+    scroll-snap-type:x mandatory; padding:4px 4px 18px; scrollbar-width:none;
   }
   .carousel::-webkit-scrollbar{ display:none; }
-  .work-item:nth-child(even){ transform:translateY(32px); }
   .work-item{
-    position:relative; flex:0 0 320px; scroll-snap-align:start;
+    position:relative; flex:0 0 460px; scroll-snap-align:start;
     display:block; text-decoration:none; color:inherit; cursor:pointer;
     border:1px solid transparent; border-radius:14px; padding:6px;
     margin:-6px; transition:transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
@@ -370,9 +369,6 @@
     transform:translateY(-4px);
     border-color:var(--line); background:var(--paper-deep);
     box-shadow:0 14px 28px rgba(0,0,0,0.06);
-  }
-  .work-item:nth-child(even):hover, .work-item:nth-child(even):focus-visible{
-    transform:translateY(28px);
   }
   .carousel:hover .work-item{ opacity:0.6; transition:opacity 0.3s ease, transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease; }
   .carousel:hover .work-item:hover,
@@ -441,19 +437,6 @@
   .carousel-nav button:active:not(:disabled){ transform:scale(0.92); border-color:var(--contour); }
   .carousel-nav button:disabled{ opacity:0.32; cursor:not-allowed; }
   .carousel-nav button:disabled:hover{ border-color:var(--line-strong); color:var(--ink); }
-  .carousel-dots{ display:flex; gap:8px; margin:0 4px; }
-  .carousel-dots button{
-    position:relative; width:28px; height:28px; padding:0; border-radius:7px;
-    border:1px solid var(--line-strong); background:var(--paper); cursor:pointer;
-    font-family:var(--font-mono); font-size:11px; color:var(--color-text-secondary);
-    display:flex; align-items:center; justify-content:center;
-    transition:border-color 0.15s ease, background 0.15s ease, color 0.15s ease, transform 0.1s ease;
-  }
-  .carousel-dots button:hover{ border-color:var(--contour); color:var(--contour); }
-  .carousel-dots button:active{ transform:scale(0.92); }
-  .carousel-dots button[aria-selected="true"]{
-    background:var(--contour); border-color:var(--contour); color:#FBF4EE; font-weight:600;
-  }
   .carousel-count{
     font-family:var(--font-mono); font-size:11px; color:var(--color-text-secondary);
     margin-right:auto; letter-spacing:0.04em;
@@ -548,10 +531,6 @@
     text-transform:none;
   }
   .contact-ledger a:hover{ color:var(--contour); }
-  .colophon-stack{
-    font-family:var(--font-mono); font-size:10px; letter-spacing:0.04em;
-    color:var(--color-text-secondary); text-transform:none; opacity:0.8;
-  }
   .studio-status-row{
     display:flex; align-items:center; gap:8px; font-family:var(--font-mono);
     font-size:11px; text-transform:uppercase;
@@ -1315,7 +1294,6 @@
       </div>
       <div class="carousel-nav">
         <button type="button" id="car-prev" aria-label="Previous project">&larr;</button>
-        <div class="carousel-dots" id="car-dots" role="tablist" aria-label="Selected work position"></div>
         <span class="carousel-count" id="car-count" aria-live="polite">1 / 5</span>
         <button type="button" id="car-next" aria-label="Next project">&rarr;</button>
       </div>
@@ -1636,9 +1614,6 @@
             <span id="status-indicator-dot" class="status-dot"></span>
             <span id="status-indicator-text">Checking&hellip;</span>
           </div>
-        </div>
-        <div class="colophon-section">
-          <p class="colophon-stack">Shorthand &middot; Datawrapper &middot; Flourish &middot; QGIS &middot; Mapbox</p>
         </div>
       </div>
     </div>
@@ -1964,25 +1939,10 @@
     var carousel = document.getElementById('work-carousel');
     var prevBtn = document.getElementById('car-prev');
     var nextBtn = document.getElementById('car-next');
-    var dotsWrap = document.getElementById('car-dots');
     var countEl = document.getElementById('car-count');
-    if (carousel && prevBtn && nextBtn && dotsWrap) {
+    if (carousel && prevBtn && nextBtn) {
       var items = Array.prototype.slice.call(carousel.querySelectorAll('.work-item'));
       var total = items.length;
-
-      items.forEach(function(item, i){
-        var dot = document.createElement('button');
-        dot.type = 'button';
-        dot.setAttribute('role', 'tab');
-        dot.textContent = String(i + 1);
-        dot.setAttribute('aria-label', 'Go to project ' + (i + 1) + ' of ' + total);
-        dot.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
-        dot.addEventListener('click', function(){
-          item.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
-        });
-        dotsWrap.appendChild(dot);
-      });
-      var dots = Array.prototype.slice.call(dotsWrap.children);
 
       function closestIndex(){
         var pos = carousel.scrollLeft;
@@ -1996,14 +1956,13 @@
 
       function syncCarouselState(){
         var idx = closestIndex();
-        dots.forEach(function(d, i){ d.setAttribute('aria-selected', i === idx ? 'true' : 'false'); });
         if (countEl) countEl.textContent = (idx + 1) + ' / ' + total;
         var maxScroll = carousel.scrollWidth - carousel.clientWidth - 4;
         prevBtn.disabled = carousel.scrollLeft <= 4;
         nextBtn.disabled = carousel.scrollLeft >= maxScroll;
       }
 
-      var scrollAmount = 344;
+      var scrollAmount = 488;
       prevBtn.addEventListener('click', function(){
         carousel.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
       });
