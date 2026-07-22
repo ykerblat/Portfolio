@@ -199,15 +199,8 @@
   .regmark.br{ bottom:10px; right:10px; }
   .wrap{ max-width:1200px; margin:0 auto; padding:0 32px; }
 
-  /* accessibility: skip link + one consistent focus style for every
+  /* accessibility: one consistent focus style for every
      interactive element (buttons, links, inputs, carousel controls) */
-  .skip-link{
-    position:absolute; left:12px; top:-48px; z-index:100;
-    background:var(--ink); color:var(--paper); font-family:var(--font-mono);
-    font-size:13px; padding:10px 16px; border-radius:8px; text-decoration:none;
-    transition:top 0.15s ease;
-  }
-  .skip-link:focus{ top:12px; }
   a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible{
     outline:2px solid var(--color-focus-ring); outline-offset:2px; border-radius:1px;
   }
@@ -224,6 +217,30 @@
   nav{
     display:flex; align-items:center; justify-content:space-between;
     padding:24px 0; border-bottom:1px solid var(--line);
+  }
+  .site-nav-bar{
+    position:relative; z-index:60;
+    transition:background 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+  .site-nav-bar.is-stuck{
+    position:fixed; top:0; left:0; right:0;
+    background:rgba(var(--color-surface-rgb), 0.86);
+    -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
+    box-shadow:0 6px 24px rgba(0,0,0,0.06);
+    animation:nav-drop 0.3s ease;
+  }
+  .site-nav-bar.is-stuck nav{ padding:16px 0; border-bottom-color:transparent; }
+  @keyframes nav-drop{
+    from{ transform:translateY(-100%); }
+    to{ transform:translateY(0); }
+  }
+  /* placeholder that reserves the bar's height in-flow while it's fixed,
+     so content beneath doesn't jump when position switches */
+  .site-nav-bar-spacer{ display:none; }
+  .site-nav-bar-spacer.is-active{ display:block; }
+  @media (prefers-reduced-motion: reduce){
+    .site-nav-bar.is-stuck{ animation:none; }
+    .site-nav-bar{ transition:none; }
   }
   .wordmark{
     font-family:var(--font-mono); font-weight:600; font-size:14px;
@@ -591,7 +608,11 @@
 
   /* clients */
   .clients{ padding:88px 0 64px; }
-  .clients .wrap > p{
+  .clients-frame{
+    border:1px solid var(--line); border-radius:16px;
+    padding:48px 40px;
+  }
+  .clients-frame > p{
     font-family:var(--font-mono); font-size:12px; letter-spacing:0.1em; text-transform:uppercase;
     color:var(--slate); text-align:center; margin:0 0 44px;
   }
@@ -630,7 +651,7 @@
   }
 
   /* contact form */
-  .contact{ padding:0 0 88px; }
+  .contact{ padding:96px 0 88px; }
   .contact-grid{
     display:grid; grid-template-columns:1.1fr 0.9fr; gap:88px; align-items:start;
   }
@@ -831,22 +852,6 @@
     .process-step-reveal{ transition:none; }
   }
 
-  .quick-facts{
-    display:grid; grid-template-columns:repeat(4, 1fr); gap:28px;
-    margin-top:40px; padding-top:32px; border-top:1px solid var(--line);
-  }
-  .quick-fact{ display:flex; align-items:flex-start; gap:12px; }
-  .quick-fact svg{ width:22px; height:22px; flex:0 0 auto; margin-top:1px; }
-  .quick-fact div{ display:flex; flex-direction:column; gap:4px; }
-  .quick-fact-label{
-    font-family:var(--font-mono); font-size:10px; letter-spacing:0.06em; text-transform:uppercase;
-    color:var(--color-text-secondary);
-  }
-  .quick-fact-value{
-    font-family:var(--font-display); font-size:16px; font-style:italic;
-    color:var(--color-text-primary); line-height:1.3;
-  }
-
   /* stats band */
   .stats{ padding:88px 0; background:var(--color-surface-strata); margin:0; }
   .stats-row{ display:grid; grid-template-columns:repeat(3, 1fr); gap:24px; text-align:left; }
@@ -892,7 +897,6 @@
     .work-item{ flex:0 0 220px; }
     .studio-grid{ grid-template-columns:1fr; gap:32px; }
     .process-row{ grid-template-columns:1fr 1fr; gap:1px; }
-    .quick-facts{ grid-template-columns:1fr 1fr; gap:24px; }
     .outcomes-row{ grid-template-columns:1fr; gap:28px; }
 
     /* 48px minimum touch targets */
@@ -902,6 +906,15 @@
 
   @media (max-width: 640px){
     .statusbar .wrap{ flex-direction:column; gap:2px; padding:8px 22px; }
+
+    /* Sticky nav bar is desktop/tablet only — the fixed hamburger toggle
+       below already makes navigation reachable from anywhere on mobile. */
+    .site-nav-bar.is-stuck{
+      position:static; box-shadow:none; background:none;
+      -webkit-backdrop-filter:none; backdrop-filter:none; animation:none;
+    }
+    .site-nav-bar.is-stuck nav{ padding:24px 0; border-bottom-color:var(--line); }
+    .site-nav-bar-spacer.is-active{ display:none; }
 
     /* hamburger nav — fixed so it's reachable from anywhere on the page,
        not just when scrolled to the top */
@@ -958,7 +971,6 @@
     .surveyfoot{ justify-content:center; }
     .client-strip{ gap:24px 32px; }
     .work-item{ flex:0 0 78vw; }
-    .quick-facts{ grid-template-columns:1fr; gap:20px; }
   }
 
   @media (prefers-reduced-motion: reduce){
@@ -1110,70 +1122,140 @@
   .cs-close:focus-visible{ outline:2px solid var(--color-focus-ring); outline-offset:2px; }
   .cs-close span{ font-size:18px; line-height:1; }
 
-  .cs-content-viewport{ max-width:760px; margin:0 auto; padding:120px 32px 100px; outline:none; }
+  .cs-content-viewport{ max-width:1800px; margin:0 auto; padding:120px 32px 100px; outline:none; }
+
+  /* two-column layout: images at a fixed ~25% of viewport width on the
+     left, sticky text column on the right sized to fit entirely within
+     one viewport height (header + scrollable middle + fixed link row),
+     so the reader never loses the close/live-link controls while
+     scrolling through a long case study. */
+  .cs-layout{
+    display:grid; grid-template-columns:minmax(0, 25vw) minmax(0, 1fr); gap:56px;
+    align-items:start;
+  }
+  .cs-image-col{ display:flex; flex-direction:column; gap:20px; min-width:0; }
+  .cs-text-col{ min-width:0; align-self:stretch; }
+  .cs-text-col-inner{
+    position:sticky; top:32px;
+    max-height:calc(100vh - 64px);
+    display:flex; flex-direction:column;
+  }
+  .cs-text-scroll{
+    overflow-y:auto; padding-right:4px; min-height:0; flex:1 1 auto;
+  }
+
   .cs-kind{
     font-family:var(--font-mono); font-size:11px; letter-spacing:0.08em; text-transform:uppercase;
     margin:0 0 14px;
   }
   .cs-kind.client{ color:var(--flag); }
   .cs-kind.personal{ color:var(--slate); }
+  .cs-kind-date{ color:var(--color-text-secondary); text-transform:none; letter-spacing:0; }
   .cs-title{
-    font-family:var(--font-display); font-weight:400; font-size:clamp(2rem, 5vw, 3rem);
-    line-height:1.05; margin:0 0 22px;
+    font-family:var(--font-display); font-weight:400; font-size:clamp(1.4rem, 1.9vw, 1.9rem);
+    line-height:1.12; margin:0 0 20px;
   }
-  .cs-meta{
-    font-family:var(--font-body); font-size:17px; line-height:1.6;
-    color:var(--color-text-secondary);
-    border-top:1px solid var(--line); border-bottom:1px solid var(--line);
-    padding:16px 0; margin:0 0 28px;
+  /* the intro line carries more visual weight than the body copy below it
+     — larger, semi-bold — since it's the reader's first substantive
+     sentence and should read like a strapline, not just another paragraph. */
+  .cs-intro{
+    font-family:var(--font-body); font-size:18px; font-weight:600; line-height:1.5;
+    color:var(--color-text-primary); margin:0 0 24px;
   }
-  .cs-role{
-    font-family:var(--font-body); font-size:15.5px; line-height:1.55;
-    color:var(--color-text-secondary); margin:0 0 40px; max-width:640px;
-    font-style:italic;
-  }
-  .cs-images{
-    display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px;
-    margin:0 0 40px;
-  }
+  .cs-images{ display:flex; flex-direction:column; gap:16px; }
   .cs-img-slot{
-    aspect-ratio:16/9; overflow:hidden; border-radius:8px;
+    width:100%; aspect-ratio:16/10; overflow:hidden; border-radius:10px;
     background:var(--color-surface-raised); border:1px solid var(--line);
   }
-  .cs-img-slot img{ width:100%; height:100%; object-fit:cover; display:block; }
-  .cs-img-slot.cs-img-empty{ display:flex; align-items:center; justify-content:center; }
+  .cs-img-btn{
+    all:unset; display:block; width:100%; height:100%; cursor:zoom-in;
+    position:relative;
+  }
+  .cs-img-btn:focus-visible{ outline:2px solid var(--color-focus-ring); outline-offset:-2px; }
+  .cs-img-btn img{ width:100%; height:100%; object-fit:cover; display:block; transition:transform 0.3s ease; }
+  .cs-img-btn:hover img{ transform:scale(1.03); }
+  .cs-img-slot.cs-img-empty .cs-img-btn{ cursor:default; display:flex; align-items:center; justify-content:center; }
   .cs-img-slot.cs-img-empty::after{
     content:'Screenshot pending'; font-family:var(--font-mono); font-size:10px;
     color:var(--color-text-secondary); letter-spacing:0.04em; text-transform:uppercase; opacity:0.5;
   }
   .cs-img-slot.cs-img-empty img{ display:none; }
   .cs-approach{
-    border-left:2px solid var(--contour); padding-left:22px; margin:0 0 28px;
+    border-left:2px solid var(--contour); padding-left:18px; margin:0 0 22px;
   }
   .cs-outcome{
-    border-left:2px solid var(--p-teal-500); padding-left:22px; margin:0 0 40px;
+    border-left:2px solid var(--p-teal-500); padding-left:18px; margin:0 0 22px;
   }
-  .cs-approach p, .cs-outcome p{
-    font-family:var(--font-body); font-size:17px; line-height:1.6; color:var(--color-text-primary); margin:0;
+  .cs-technical{
+    border-left:2px solid var(--line-strong); padding-left:18px; margin:0 0 8px;
   }
-  .cs-approach .cs-approach-label, .cs-outcome .cs-approach-label{
-    font-family:var(--font-mono); font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase;
-    display:block; margin:0 0 10px;
+  .cs-approach p, .cs-outcome p, .cs-technical p{
+    font-family:var(--font-body); font-size:14.5px; line-height:1.55; color:var(--color-text-primary); margin:0;
+  }
+  .cs-technical p{
+    font-family:var(--font-mono); font-size:12px; letter-spacing:0.01em; color:var(--color-text-secondary);
+  }
+  .cs-approach .cs-approach-label, .cs-outcome .cs-approach-label, .cs-technical .cs-approach-label{
+    font-family:var(--font-mono); font-size:10px; letter-spacing:0.08em; text-transform:uppercase;
+    display:block; margin:0 0 8px;
   }
   .cs-approach .cs-approach-label{ color:var(--contour); }
   .cs-outcome .cs-approach-label{ color:var(--p-teal-500); }
-  .cs-link-row{ margin-top:40px; padding-top:28px; border-top:1px solid var(--line); display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
-  .cs-live-link{
-    font-family:var(--font-mono); font-size:13px; letter-spacing:0.04em; text-transform:uppercase;
-    color:var(--color-link); text-decoration:none; border-bottom:1px solid currentColor;
-    transition:color 0.15s ease;
+  .cs-technical .cs-approach-label{ color:var(--color-text-secondary); }
+  .cs-link-row{
+    flex:0 0 auto; margin-top:0; padding-top:18px; border-top:1px solid var(--line);
+    display:flex; align-items:center; gap:14px; flex-wrap:wrap;
   }
-  .cs-live-link:hover{ color:var(--contour); }
+  /* the live-project link is the primary call to action here — styled as
+     a solid button so it reads as more prominent than the copy-link
+     utility button next to it. */
+  .cs-live-link{
+    font-family:var(--font-mono); font-weight:600; font-size:13px; letter-spacing:0.04em; text-transform:uppercase;
+    color:var(--color-cta-text); background:var(--flag); text-decoration:none;
+    padding:12px 20px; border-radius:9px; border:1px solid var(--flag);
+    transition:transform 0.1s ease, opacity 0.15s ease;
+  }
+  .cs-live-link:hover{ opacity:0.9; }
+  .cs-live-link:active{ transform:scale(0.97); }
+  @media (max-width: 900px){
+    .cs-layout{ grid-template-columns:1fr; gap:36px; }
+    .cs-text-col-inner{ position:static; max-height:none; display:block; }
+    .cs-text-scroll{ overflow-y:visible; padding-right:0; }
+  }
   @media (max-width: 640px){
     .cs-content-viewport{ padding:96px 22px 80px; }
     .cs-close{ top:16px; right:16px; padding:0; width:48px; height:48px; justify-content:center; }
     .cs-close span:last-child{ display:none; }
-    .cs-images{ grid-template-columns:1fr; }
+    .cs-img-slot{ aspect-ratio:4/3; }
+  }
+
+  /* image lightbox — click any case-study screenshot to view it full-size */
+  .cs-lightbox{
+    position:fixed; inset:0; z-index:300; display:flex; align-items:center; justify-content:center;
+    background:rgba(13,14,11,0.92); opacity:0; visibility:hidden; padding:40px;
+    transition:opacity 0.25s ease, visibility 0s linear 0.25s;
+  }
+  .cs-lightbox.open{ opacity:1; visibility:visible; transition:opacity 0.25s ease; }
+  .cs-lightbox-img{
+    max-width:100%; max-height:100%; object-fit:contain; border-radius:6px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.4);
+  }
+  .cs-lightbox-close{
+    position:fixed; top:32px; right:32px; z-index:310;
+    width:48px; height:48px; border-radius:50%; border:1px solid rgba(242,233,220,0.3);
+    background:rgba(13,14,11,0.6); color:#F2E9DC; font-size:20px; line-height:1; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition:border-color 0.15s ease, background 0.15s ease;
+  }
+  .cs-lightbox-close:hover{ border-color:rgba(242,233,220,0.6); background:rgba(13,14,11,0.85); }
+  .cs-lightbox-close:focus-visible{ outline:2px solid var(--color-focus-ring); outline-offset:2px; }
+  @media (max-width: 640px){
+    .cs-lightbox{ padding:16px; }
+    .cs-lightbox-close{ top:16px; right:16px; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .cs-lightbox{ transition:none; }
+    .cs-img-btn img{ transition:none; }
   }
   /* ============================================================
      MOTION LAYER — all animation controlled here.
@@ -1310,12 +1392,10 @@
 
   <div id="case-study-overlay" class="cs-overlay" aria-hidden="true">
     <button id="cs-close-btn" class="cs-close" aria-label="Close case study" type="button">
-      <span aria-hidden="true">&times;</span> Close reference
+      <span aria-hidden="true">&times;</span> Close this case study
     </button>
     <div id="cs-dynamic-content" class="cs-content-viewport" tabindex="-1"></div>
   </div>
-
-  <a class="skip-link" href="#content-start">Skip to content</a>
 
   <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">◐</button>
 
@@ -1368,22 +1448,25 @@
     </div>
   </div>
 
-  <div class="wrap">
-    <nav>
-      <div class="wordmark">Contour Lines</div>
-      <button class="nav-toggle" id="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="navlinks">
-        <span></span><span></span><span></span>
-      </button>
-      <div class="navlinks" id="navlinks">
-        <a href="#main" aria-current="page">Home</a>
-        <a href="#work">Work</a>
-        <a href="storymaps.html">Stories</a>
-        <a href="#studio">Studio</a>
-        <a href="#services">Services</a>
-        <a href="#contact">Contact</a>
-      </div>
-    </nav>
+  <div class="site-nav-bar" id="site-nav-bar">
+    <div class="wrap">
+      <nav>
+        <div class="wordmark">Contour Lines</div>
+        <button class="nav-toggle" id="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="navlinks">
+          <span></span><span></span><span></span>
+        </button>
+        <div class="navlinks" id="navlinks">
+          <a href="#main" aria-current="page">Home</a>
+          <a href="#work">Work</a>
+          <a href="storymaps.html">Stories</a>
+          <a href="#studio">Studio</a>
+          <a href="#services">Services</a>
+          <a href="#contact">Contact</a>
+        </div>
+      </nav>
+    </div>
   </div>
+  <div class="site-nav-bar-spacer" id="site-nav-bar-spacer"></div>
 
   <section class="parallax-hero">
     <canvas class="vector-canvas" id="vector-canvas" aria-hidden="true" tabindex="-1"></canvas>
@@ -1524,6 +1607,7 @@
 
   <section class="clients">
     <div class="wrap">
+      <div class="clients-frame">
       <p>Trusted by</p>
       <div class="client-strip">
         <div class="client-logo">
@@ -1589,6 +1673,7 @@
           <span class="client-logo-name">BDO LLC</span>
           </a>
         </div>
+      </div>
       </div>
     </div>
   </section>
@@ -1799,36 +1884,6 @@
           <h4>Ship</h4>
           <p>Delivered, documented, and handed off in a form your team can actually maintain.</p>
           <div class="process-step-reveal"><p>We live-test the site with you at launch and stay reachable right after for troubleshooting. Final sign-off and legal clearance always rest with your team.</p></div>
-        </div>
-      </div>
-      <div class="quick-facts">
-        <div class="quick-fact">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="var(--contour)" stroke-width="1.4"/><path d="M12 7v5l3.5 2" stroke="var(--contour)" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <div>
-            <span class="quick-fact-label">Typical engagement</span>
-            <span class="quick-fact-value">4&ndash;10 weeks</span>
-          </div>
-        </div>
-        <div class="quick-fact">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="2" fill="none" stroke="var(--p-teal-300)" stroke-width="1.4"/><path d="M4 9h16" stroke="var(--p-teal-300)" stroke-width="1.4"/></svg>
-          <div>
-            <span class="quick-fact-label">Engagement model</span>
-            <span class="quick-fact-value">Project-based, scoped after an initial call</span>
-          </div>
-        </div>
-        <div class="quick-fact">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h9M4 12h16M4 18h9" stroke="var(--flag)" stroke-width="1.4" stroke-linecap="round"/></svg>
-          <div>
-            <span class="quick-fact-label">Languages</span>
-            <span class="quick-fact-value">English &middot; French</span>
-          </div>
-        </div>
-        <div class="quick-fact">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="var(--contour)" stroke-width="1.4"/><path d="M3 12h18M12 3c2.5 2.5 3.8 5.7 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.7-3.8-9s1.3-6.5 3.8-9Z" stroke="var(--contour)" stroke-width="1.2" fill="none"/></svg>
-          <div>
-            <span class="quick-fact-label">Based in</span>
-            <span class="quick-fact-value">Paris &middot; remote-friendly worldwide</span>
-          </div>
         </div>
       </div>
     </div>
@@ -2493,79 +2548,94 @@
         'sao-tome': {
           kind: 'client',
           client: 'World Bank / WACA / GFDRR',
+          deliveryDate: '2024',
           title: 'Head Above Water — S\u00e3o Tom\u00e9 and Pr\u00edncipe\u2019s Path to Flood Resilience',
-          problem: 'A small island nation\u2019s flood exposure had never been pulled into a single navigable picture. Decision-makers needed to see risk at neighborhood scale, not masked by national averages.',
-          role: 'Designed and built an ArcGIS StoryMap layering historical flood events, infrastructure exposure, and population density, accessible to technical staff and non-GIS policymakers alike.',
-          outcome: 'The first publicly navigable flood risk visualization for S\u00e3o Tom\u00e9 and Pr\u00edncipe, surfacing high-risk neighborhoods invisible in aggregate statistics.',
-          approach: 'The real finding only becomes visible at the right scale. A national average smooths away the insight that most risk concentrates in a handful of low-lying neighborhoods. The interactive map lets a reader zoom from the whole archipelago to a single street without losing the thread between local detail and national context.',
+          intro: 'A small island nation\u2019s flood exposure had never been pulled into a single navigable picture. Decision-makers needed to see risk at neighborhood scale, not masked by national averages.',
+          problem: 'S\u00e3o Tom\u00e9 and Pr\u00edncipe faces a trifecta of compounding threats: shifting climate conditions, economic fragility, and escalating urbanization. With projections indicating a 30cm sea-level rise and a 20% increase in intense rainfall by 2050, the country required a rigorous method to quantify and communicate spatial flood hazards. The primary challenge was the total absence of detailed, publicly available quantitative datasets focusing on national-scale flood risks, which severely hampered strategic urban planning and community climate adaptation efforts.',
+          approach: 'The real finding only becomes visible at the right scale. A national average smooths away the insight that most risk concentrates in a handful of low-lying neighborhoods. The interactive map lets a reader zoom from the whole archipelago to a single street without losing the thread between local detail and national context. We moved beyond traditional siloed assessments by simultaneously examining coastal flooding (tide, surge, and wave setup) and rainfall-related flooding (pluvial/fluvial), mapping present-day (2020) and future climate projections (2050 and 2080) under medium-to-high emissions scenarios.',
+          outcome: 'The first publicly navigable flood risk visualization for S\u00e3o Tom\u00e9 and Pr\u00edncipe, surfacing high-risk neighborhoods invisible in aggregate statistics. By clearly delineating hotspots where coastal and inland flooding converge, the project facilitates emergency response planning and prioritizes resource allocation for climate risk mitigation.',
+          technical: 'ArcGIS StoryMaps, QGIS, Mapbox, Figma, Datawrapper.',
           liveUrl: 'https://storymaps.arcgis.com/stories/2b69b33c3c75482b86ec985e1dca6f49',
           images: [
             /* Replace paths with real screenshots once captured */
             'img/cs/sao-tome-1.jpeg',
             'img/cs/sao-tome-2.jpg',
-            'img/cs/sao-tome-3.jpg'
+            'img/cs/sao-tome-3.jpg',
+            'img/cs/sao-tome-4.jpg'
           ]
         },
         'capital-mapping': {
           kind: 'client',
           client: 'Gates Foundation / Camber Collective',
+          deliveryDate: '2024',
           title: 'Economic Mobility Funding Dashboard',
-          problem: 'Trillions in federal spending and billions in philanthropic grants flow toward economic mobility in the US each year \u2014 but which of the 28 life experiences that drive lifetime income actually gets funded, and where are the gaps?',
-          role: 'Designed and built an interactive dashboard visualizing federal and philanthropic funding flows across the Mobility Experiences framework, for policymakers and funders.',
-          outcome: 'A publicly accessible platform helping funders identify the largest gaps between current investment levels and documented mobility impact.',
-          approach: 'The hardest design challenge wasn\u2019t displaying the numbers \u2014 it was what to do when 60% of all funding flows to three entitlement programs, making everything else invisible at scale. We isolated mandatory spending to reveal a completely different picture of discretionary funding priorities underneath.',
+          intro: 'Trillions in federal spending and billions in philanthropic grants flow toward economic mobility in the US each year \u2014 but which of the 28 life experiences that drive lifetime income actually gets funded, and where are the gaps?',
+          problem: 'Annually, trillions of dollars from the federal government and philanthropic institutions flow into systems meant to support economic mobility in the United States. However, these complex funding streams are often opaque, making it difficult for stakeholders to understand where capital is concentrated and where critical gaps exist. The challenge was to architect a data visualization tool capable of parsing massive financial datasets \u2014 totaling over $6 trillion in federal and $8.3 billion in philanthropic funding \u2014 without overwhelming the end user.',
+          approach: 'The hardest design challenge wasn\u2019t displaying the numbers \u2014 it was what to do when 60% of all funding flows to three entitlement programs, making everything else invisible at scale. We isolated mandatory spending to reveal a completely different picture of discretionary funding priorities underneath. We structured the platform into three primary domains \u2014 life experiences, public perspectives, and funding trends \u2014 emphasizing clean typography and interactive charts that guide the user from macroeconomic overviews down to granular philanthropic grant data.',
+          outcome: 'A publicly accessible platform helping funders identify the largest gaps between current investment levels and documented mobility impact. It serves as an essential intelligence tool for private companies, non-profits, and policy-makers to uncover funding disparities \u2014 such as the underfunding of career progression and social capital relative to basic needs.',
+          technical: 'd3.js, Node.js, Mapbox, Flourish, Figma.',
           liveUrl: 'https://mobilityexperiences.org/capital-mapping-dashboard/',
           images: [
             'img/cs/capital-mapping-1.jpg',
             'img/cs/capital-mapping-2.jpg',
-            'img/cs/capital-mapping-3.jpg'
+            'img/cs/capital-mapping-3.jpg',
+            'img/cs/capital-mapping-4.jpg'
           ]
         },
         'power-agenda': {
           kind: 'client',
           client: 'D\u0113mos / Camber Collective',
+          deliveryDate: '2023',
           title: 'Power Scorecard',
-          problem: 'How do you measure the conditions for economic and political power across all 50 US states \u2014 and make the results usable for advocacy, not just readable?',
-          role: 'Designed the interactive Power Scorecard \u2014 a multi-indicator state-by-state framework visualized through filterable heat maps, downloadable scorecards, and a comparative state tool.',
-          outcome: 'A living data framework tracking 120-point aggregate conditions for economic security, mobility, civic vitality, and democratic participation across all 50 states.',
-          approach: 'The dashboard needed to work at two levels simultaneously: letting a policy professional drill into state-level scores, and letting a general reader grasp the headline finding without touching the methodology. The interactive map and ranked table serve each audience independently.',
+          intro: 'How do you measure the conditions for economic and political power across all 50 US states \u2014 and make the results usable for advocacy, not just readable?',
+          problem: 'Understanding the deep connection between economic security and political power requires looking at diverse, disconnected indicators across all 50 states. D\u0113mos needed a way to test and visually prove their core theory: that economic and political power are inextricably linked. The challenge was aggregating disparate, publicly available datasets into a cohesive, standardized framework that could measure economic mobility, civic vitality, and democratic engagement while accurately reflecting the realities of marginalized communities.',
+          approach: 'The dashboard needed to work at two levels simultaneously: letting a policy professional drill into state-level scores, and letting a general reader grasp the headline finding without touching the methodology. The interactive map and ranked table serve each audience independently. Working alongside Camber Collective, we developed a 120-point ranking rubric that translates complex civic and economic data into clear, comparative visual evidence, letting users toggle between high-level heat maps and individual state scorecards.',
+          outcome: 'A living data framework tracking 120-point aggregate conditions for economic security, mobility, civic vitality, and democratic participation across all 50 states. By visually exposing how even the highest-performing states fall short of optimal conditions, the platform equips grassroots organizations and policy advocates with the intelligence needed to fight for equitable power distribution.',
+          technical: 'd3.js, QGIS, Mapbox, Node.js, Figma.',
           liveUrl: 'https://power.demos.org/',
           images: [
             'img/cs/power-scorecard-1.jpg',
             'img/cs/power-scorecard-2.jpg',
-            'img/cs/power-scorecard-3.jpg'
+            'img/cs/power-scorecard-3.jpg',
+            'img/cs/power-scorecard-4.jpg'
           ]
         },
         'harvesting-conflict': {
           kind: 'client',
           client: 'Global Rights Compliance',
-          title: 'Harvesting Conflict \u2014 Ukraine',
-          problem: 'Russia\u2019s systematic destruction of Ukraine\u2019s agricultural infrastructure constitutes a war crime \u2014 but proving it requires geospatial evidence that holds up in international legal proceedings.',
-          role: 'Built an ArcGIS StoryMap documenting the weaponization of food in Ukraine, mapping agricultural destruction, food-system infrastructure attacks, and their civilian impact.',
-          outcome: 'A geospatial accountability record of Russia\u2019s deprivation of civilian survival infrastructure, developed for international legal accountability efforts.',
-          approach: 'This needed to hold up as evidence, not just communicate well. Every data point traces back to a cited source, and the cartographic choices deliberately avoid anything that could be read as editorializing \u2014 no alarmist color ramps, no dramatized iconography. The restraint is the point.',
+          deliveryDate: '2024',
+          title: 'Harvesting Conflict — Ukraine',
+          intro: 'Russia\u2019s systematic destruction of Ukraine\u2019s agricultural infrastructure constitutes a war crime \u2014 but proving it requires geospatial evidence that holds up in international legal proceedings.',
+          problem: 'In the context of the conflict in Ukraine, the systemic deprivation of objects indispensable to civilian survival and the broader weaponization of food present immense humanitarian and geopolitical crises. The challenge was to responsibly and accurately visualize highly sensitive conflict data, translating raw intelligence into a compelling narrative that exposed these violations to international human rights organizations and supply chain watchdogs.',
+          approach: 'This needed to hold up as evidence, not just communicate well. Every data point traces back to a cited source, and the cartographic choices deliberately avoid anything that could be read as editorializing \u2014 no alarmist color ramps, no dramatized iconography. The restraint is the point. We used high-precision digital cartography to map the timeline and spatial footprint of resource deprivation, focusing on the intersection of agricultural supply chains and civilian infrastructure.',
+          outcome: 'A geospatial accountability record of Russia\u2019s deprivation of civilian survival infrastructure, developed for international legal accountability efforts. The resulting story map provides supply chain organizations, humanitarian responders, and geopolitical foresight teams with a clear, irrefutable visual record of the conflict\u2019s agricultural toll.',
+          technical: 'ArcGIS StoryMaps, Shorthand, QGIS, Mapbox, Figma.',
           liveUrl: 'https://storymaps.arcgis.com/stories/ec72c0b13891439399944131ba0784dc',
           images: [
             'img/cs/harvesting-conflict-1.jpg',
             'img/cs/harvesting-conflict-4.gif',
-            'img/cs/harvesting-conflict-3.jpg'
+            'img/cs/harvesting-conflict-3.jpg',
+            'img/cs/harvesting-conflict-5.jpg'
           ]
         },
         'wine-climate': {
           kind: 'personal',
           client: null,
-          title: 'Ripe for Disruption \u2014 Climate Change and the Future of the Wine Industry',
-          problem: 'Climate change is quietly rewriting the global wine map, but the data was scattered, highly technical, and split across two very different audiences with no common entry point.',
-          role: 'Designed and built a geovisualization thesis project at Parsons identifying wine regions on the frontlines of climate change, using case studies from California and Bordeaux.',
-          outcome: 'A Parsons MSc Data Visualization thesis examining two extreme-weather events and their cascading impact on wine production geography.',
-          approach: 'Two audiences needed the same underlying data to answer opposite questions: where is the industry heading globally, and which bottle in my cellar should I worry about personally. A timeline slider let both questions share one dataset instead of forcing a choice between a policy brief and a wine blog.',
+          deliveryDate: '2022',
+          title: 'Ripe for Disruption — Climate Change and the Future of the Wine Industry',
+          intro: 'Climate change is quietly rewriting the global wine map, but the data was scattered, highly technical, and split across two very different audiences with no common entry point.',
+          problem: 'This project reframes agricultural workers \u2014 specifically winemakers \u2014 as some of the world\u2019s most seasoned climate scientists. The data on extreme-weather events and their cascading impact on wine production geography was scattered, highly technical, and split across two very different audiences with no common entry point: industry professionals tracking global shifts, and consumers wondering about a specific bottle in their cellar.',
+          approach: 'Two audiences needed the same underlying data to answer opposite questions: where is the industry heading globally, and which bottle in my cellar should I worry about personally. A timeline slider let both questions share one dataset instead of forcing a choice between a policy brief and a wine blog. The approach blends historical agricultural techniques with modern climate data, highlighting how centuries of localized knowledge can inform contemporary environmental services.',
+          outcome: 'A Parsons MSc Data Visualization thesis examining two extreme-weather events and their cascading impact on wine production geography, using case studies from California and Bordeaux. The repository serves as a bridge between academic climate research, sustainable agricultural practices, and actionable data storytelling for the private sustainability sector.',
+          technical: 'Figma, Node.js, QGIS, Web Design Frameworks.',
           /* TODO: swap liveUrl for the live project once restored.
              Currently pointing to Parsons faculty profile as a placeholder. */
           liveUrl: 'https://www.newschool.edu/parsons/profile/yann-kerblat/',
           images: [
             'img/cs/wine-climate-1.jpg',
             'img/cs/wine-climate-2.jpg',
-            'img/cs/wine-climate-3.gif'
+            'img/cs/wine-climate-3.gif',
+            'img/cs/wine-climate-4.jpg'
           ]
         }
       };
@@ -2587,15 +2657,17 @@
       function render(caseId){
         var data = CASES[caseId];
         if (!data) return false;
-        var kindLine = data.kind === 'client'
-          ? '<p class="cs-kind client">Client \u2014 ' + escapeHtml(data.client) + '</p>'
-          : '<p class="cs-kind personal">Personal research project</p>';
+        var recipientLine = data.kind === 'client'
+          ? '<p class="cs-kind client">Recipient \u2014 ' + escapeHtml(data.client) + (data.deliveryDate ? ' <span class="cs-kind-date">(' + escapeHtml(data.deliveryDate) + ')</span>' : '') + '</p>'
+          : '<p class="cs-kind personal">Personal research project' + (data.deliveryDate ? ' <span class="cs-kind-date">(' + escapeHtml(data.deliveryDate) + ')</span>' : '') + '</p>';
 
         var imagesHtml = data.images && data.images.length
           ? '<div class="cs-images">' +
               data.images.map(function(src, i){
                 return '<div class="cs-img-slot">' +
-                  '<img src="' + escapeHtml(src) + '" alt="' + escapeHtml(data.title) + ' \u2014 screenshot ' + (i + 1) + '" loading="lazy" onerror="this.parentNode.classList.add(\'cs-img-empty\')">' +
+                  '<button type="button" class="cs-img-btn" data-full="' + escapeHtml(src) + '" aria-label="Open full-size image ' + (i + 1) + ' of ' + data.images.length + '">' +
+                    '<img src="' + escapeHtml(src) + '" alt="' + escapeHtml(data.title) + ' \u2014 screenshot ' + (i + 1) + '" loading="lazy" onerror="this.closest(\'.cs-img-slot\').classList.add(\'cs-img-empty\')">' +
+                  '</button>' +
                 '</div>';
               }).join('') +
             '</div>'
@@ -2611,23 +2683,44 @@
           ? '<a href="' + escapeHtml(data.liveUrl) + '" target="_blank" rel="noopener noreferrer" class="cs-live-link">View live project \u2192</a>'
           : '';
 
+        var technicalHtml = data.technical
+          ? '<div class="cs-technical">' +
+              '<span class="cs-approach-label">Technical inputs</span>' +
+              '<p>' + escapeHtml(data.technical) + '</p>' +
+            '</div>'
+          : '';
+
+        var introHtml = data.intro
+          ? '<p class="cs-intro">' + escapeHtml(data.intro) + '</p>'
+          : '';
+
         viewport.innerHTML =
-          kindLine +
-          '<h2 class="cs-title">' + escapeHtml(data.title) + '</h2>' +
-          '<div class="cs-meta">' +
-            '<span>' + escapeHtml(data.problem) + '</span>' +
-          '</div>' +
-          '<p class="cs-role">' + escapeHtml(data.role) + '</p>' +
-          imagesHtml +
-          '<div class="cs-approach">' +
-            '<span class="cs-approach-label">The approach</span>' +
-            '<p>' + escapeHtml(data.approach) + '</p>' +
-          '</div>' +
-          '<div class="cs-outcome">' +
-            '<span class="cs-approach-label">Outcome</span>' +
-            '<p>' + escapeHtml(data.outcome) + '</p>' +
-          '</div>' +
-          '<div class="cs-link-row">' + (linkHtml || '') + copyBtn + '</div>';
+          '<div class="cs-layout">' +
+            '<div class="cs-image-col">' + imagesHtml + '</div>' +
+            '<div class="cs-text-col">' +
+              '<div class="cs-text-col-inner">' +
+                '<div class="cs-text-scroll">' +
+                  recipientLine +
+                  '<h2 class="cs-title">' + escapeHtml(data.title) + '</h2>' +
+                  introHtml +
+                  '<div class="cs-approach">' +
+                    '<span class="cs-approach-label">The challenge</span>' +
+                    '<p>' + escapeHtml(data.problem) + '</p>' +
+                  '</div>' +
+                  '<div class="cs-approach">' +
+                    '<span class="cs-approach-label">The approach</span>' +
+                    '<p>' + escapeHtml(data.approach) + '</p>' +
+                  '</div>' +
+                  '<div class="cs-outcome">' +
+                    '<span class="cs-approach-label">The outcome</span>' +
+                    '<p>' + escapeHtml(data.outcome) + '</p>' +
+                  '</div>' +
+                  technicalHtml +
+                '</div>' +
+                '<div class="cs-link-row">' + (linkHtml || '') + copyBtn + '</div>' +
+              '</div>' +
+            '</div>' +
+          '</div>';
         return true;
       }
 
@@ -2703,11 +2796,18 @@
       closeBtn.addEventListener('click', function(){ close(); });
 
       viewport.addEventListener('click', function(e){
+        var imgBtn = e.target.closest('.cs-img-btn');
+        if (imgBtn){
+          openLightbox(imgBtn.getAttribute('data-full'));
+          return;
+        }
+
         var btn = e.target.closest('.cs-copy-btn');
         if (!btn) return;
         var url = btn.getAttribute('data-url');
-        if (!url || !navigator.clipboard) return;
-        navigator.clipboard.writeText(url).then(function(){
+        if (!url) return;
+
+        function showCopied(){
           btn.classList.add('copied');
           var label = btn.querySelector('.cs-copy-label');
           var icon = btn.querySelector('.cs-copy-icon');
@@ -2718,7 +2818,91 @@
             if (label) label.textContent = 'Copy link';
             if (icon) icon.innerHTML = '<rect x=\"9\" y=\"2\" width=\"10\" height=\"14\" rx=\"2\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.4\"/><rect x=\"3\" y=\"7\" width=\"10\" height=\"14\" rx=\"2\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.4\"/>';
           }, 1500);
-        });
+        }
+
+        function showFailed(){
+          var label = btn.querySelector('.cs-copy-label');
+          if (label) label.textContent = 'Copy failed';
+          setTimeout(function(){
+            if (label) label.textContent = 'Copy link';
+          }, 1500);
+        }
+
+        // Clipboard API requires a secure context (https or localhost) and
+        // permission; fall back to a hidden-textarea + execCommand copy
+        // for http, older browsers, or when the permission is denied.
+        function legacyCopy(){
+          try {
+            var ta = document.createElement('textarea');
+            ta.value = url;
+            ta.setAttribute('readonly', '');
+            ta.style.position = 'fixed';
+            ta.style.top = '-9999px';
+            ta.style.left = '-9999px';
+            document.body.appendChild(ta);
+            ta.select();
+            ta.setSelectionRange(0, ta.value.length);
+            var ok = document.execCommand('copy');
+            document.body.removeChild(ta);
+            if (ok) showCopied(); else showFailed();
+          } catch (err){
+            showFailed();
+          }
+        }
+
+        if (navigator.clipboard && navigator.clipboard.writeText && window.isSecureContext){
+          navigator.clipboard.writeText(url).then(showCopied, legacyCopy);
+        } else {
+          legacyCopy();
+        }
+      });
+    })();
+
+    // ===== Case study image lightbox =====
+    // Clicking any case-study screenshot opens it full-size in a simple
+    // overlay. Reuses the same focus-trap / escape-to-close pattern as
+    // the case study panel itself, layered above it (higher z-index).
+    (function(){
+      var lightbox = document.createElement('div');
+      lightbox.className = 'cs-lightbox';
+      lightbox.setAttribute('aria-hidden', 'true');
+      lightbox.setAttribute('role', 'dialog');
+      lightbox.setAttribute('aria-label', 'Full-size image');
+      lightbox.innerHTML =
+        '<button type="button" class="cs-lightbox-close" aria-label="Close full-size image">' +
+          '<span aria-hidden="true">&times;</span>' +
+        '</button>' +
+        '<img class="cs-lightbox-img" src="" alt="">';
+      document.body.appendChild(lightbox);
+      var lbImg = lightbox.querySelector('.cs-lightbox-img');
+      var lbClose = lightbox.querySelector('.cs-lightbox-close');
+      var lastFocus = null;
+
+      window.openLightbox = function(src){
+        if (!src) return;
+        lastFocus = document.activeElement;
+        lbImg.src = src;
+        lightbox.classList.add('open');
+        lightbox.setAttribute('aria-hidden', 'false');
+        lbClose.focus();
+        document.addEventListener('keydown', onLbKeydown);
+      };
+
+      function closeLightbox(){
+        lightbox.classList.remove('open');
+        lightbox.setAttribute('aria-hidden', 'true');
+        document.removeEventListener('keydown', onLbKeydown);
+        if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus();
+        setTimeout(function(){ lbImg.src = ''; }, 300);
+      }
+
+      function onLbKeydown(e){
+        if (e.key === 'Escape') closeLightbox();
+      }
+
+      lbClose.addEventListener('click', closeLightbox);
+      lightbox.addEventListener('click', function(e){
+        if (e.target === lightbox) closeLightbox();
       });
     })();
 
@@ -2880,6 +3064,45 @@
         studioIO.observe(studioSection);
       }
 
+    })();
+
+    // Sticky nav bar — floats fixed once the reader scrolls past the hero.
+    // Uses an IntersectionObserver on the hero itself (cheaper than a scroll
+    // listener) and a spacer div to prevent the layout jump when the bar
+    // switches from static to fixed positioning.
+    (function(){
+      var bar = document.getElementById('site-nav-bar');
+      var spacer = document.getElementById('site-nav-bar-spacer');
+      var hero = document.getElementById('main');
+      if (!bar || !spacer || !hero) return;
+
+      function setStuck(stuck){
+        if (stuck === bar.classList.contains('is-stuck')) return;
+        if (stuck){
+          spacer.style.height = bar.getBoundingClientRect().height + 'px';
+          spacer.classList.add('is-active');
+          bar.classList.add('is-stuck');
+        } else {
+          bar.classList.remove('is-stuck');
+          spacer.classList.remove('is-active');
+          spacer.style.height = '';
+        }
+      }
+
+      var io = new IntersectionObserver(function(entries){
+        // Hero fully scrolled past (out of view above the viewport) → stick the nav.
+        var entry = entries[0];
+        setStuck(entry.boundingClientRect.top < 0 && !entry.isIntersecting);
+      }, { threshold: 0, rootMargin: '0px' });
+      io.observe(hero);
+
+      window.addEventListener('resize', function(){
+        if (bar.classList.contains('is-stuck')){
+          bar.classList.remove('is-stuck');
+          spacer.style.height = bar.getBoundingClientRect().height + 'px';
+          bar.classList.add('is-stuck');
+        }
+      });
     })();
 
     // Mobile nav toggle
