@@ -1122,23 +1122,46 @@
   .cs-close:focus-visible{ outline:2px solid var(--color-focus-ring); outline-offset:2px; }
   .cs-close span{ font-size:18px; line-height:1; }
 
-  .cs-content-viewport{ max-width:1800px; margin:0 auto; padding:120px 32px 100px; outline:none; }
+  /* top padding matches the sticky column's top:5vh offset exactly, so
+     the text column's natural (pre-scroll) position and its stuck
+     position are the same — otherwise the sticky max-height math (which
+     assumes a 5vh top clearance) would be thrown off by a taller initial
+     offset and push the close/live-link row below the fold.
+     Side margins pulled in from 8vw to 4vw: every vw of margin removed
+     here becomes extra width for the text column to read in, without
+     touching the image column's rendered size at all. */
+  .cs-content-viewport{ max-width:1400px; margin:0 auto; padding:5vh 4vw 100px; outline:none; }
 
-  /* two-column layout: images at a fixed ~25% of viewport width on the
-     left, sticky text column on the right sized to fit entirely within
-     one viewport height (header + scrollable middle + fixed link row),
-     so the reader never loses the close/live-link controls while
-     scrolling through a long case study. */
+  /* two-column layout, TEXT ON THE LEFT / IMAGES ON THE RIGHT.
+     The image column is pinned to a fixed 543px — the exact width it
+     rendered at before this round of edits — via minmax(543px, 543px),
+     so it's genuinely unaffected by the margin/gap changes below rather
+     than just approximately similar. An `fr`-based split can't do this:
+     both tracks scale together whenever the container width changes, so
+     the only way to hold one track truly constant while the other grows
+     is to size it explicitly and let the other take `1fr` of whatever
+     remains. Side margins pulled in from 8vw to 4vw and the inter-column
+     gap from 6vw to 3vw; since the image column no longer absorbs any of
+     that freed space, all of it now goes to the text column.
+     Text column line length is still capped at 65ch via the `ch` unit
+     as an upper bound, though the column itself is now wider so most
+     lines will run shorter than that cap.
+     Sticky math: top:5vh + max-height:90vh + (implicit) 5vh of bottom
+     clearance = 100vh, so the whole sticky column — title down through
+     the close/live-link row — sits inside one viewport with 5vh of
+     breathing room on both edges, and with no internal scrollbar once
+     the copy is trimmed (see the shortened Challenge text below). */
   .cs-layout{
-    display:grid; grid-template-columns:minmax(0, 25vw) minmax(0, 1fr); gap:56px;
+    display:grid; grid-template-columns:minmax(0, 1fr) minmax(543px, 543px); gap:3vw;
     align-items:start;
   }
-  .cs-image-col{ display:flex; flex-direction:column; gap:20px; min-width:0; }
-  .cs-text-col{ min-width:0; align-self:stretch; }
+  .cs-image-col{ display:flex; flex-direction:column; min-width:0; order:2; }
+  .cs-text-col{ min-width:0; align-self:stretch; order:1; }
   .cs-text-col-inner{
-    position:sticky; top:32px;
-    max-height:calc(100vh - 64px);
+    position:sticky; top:5vh;
+    max-height:90vh;
     display:flex; flex-direction:column;
+    max-width:65ch;
   }
   .cs-text-scroll{
     overflow-y:auto; padding-right:4px; min-height:0; flex:1 1 auto;
@@ -1162,7 +1185,7 @@
     font-family:var(--font-body); font-size:18px; font-weight:600; line-height:1.5;
     color:var(--color-text-primary); margin:0 0 24px;
   }
-  .cs-images{ display:flex; flex-direction:column; gap:16px; }
+  .cs-images{ display:flex; flex-direction:column; gap:6vh; }
   .cs-img-slot{
     width:100%; aspect-ratio:16/10; overflow:hidden; border-radius:10px;
     background:var(--color-surface-raised); border:1px solid var(--line);
@@ -1190,7 +1213,7 @@
     border-left:2px solid var(--line-strong); padding-left:18px; margin:0 0 8px;
   }
   .cs-approach p, .cs-outcome p, .cs-technical p{
-    font-family:var(--font-body); font-size:14.5px; line-height:1.55; color:var(--color-text-primary); margin:0;
+    font-family:var(--font-body); font-size:15.5px; line-height:1.65; color:var(--color-text-primary); margin:0;
   }
   .cs-technical p{
     font-family:var(--font-mono); font-size:12px; letter-spacing:0.01em; color:var(--color-text-secondary);
@@ -1392,7 +1415,7 @@
 
   <div id="case-study-overlay" class="cs-overlay" aria-hidden="true">
     <button id="cs-close-btn" class="cs-close" aria-label="Close case study" type="button">
-      <span aria-hidden="true">&times;</span> Close this case study
+      <span aria-hidden="true">&times;</span> Close
     </button>
     <div id="cs-dynamic-content" class="cs-content-viewport" tabindex="-1"></div>
   </div>
@@ -2551,7 +2574,7 @@
           deliveryDate: '2024',
           title: 'Head Above Water — S\u00e3o Tom\u00e9 and Pr\u00edncipe\u2019s Path to Flood Resilience',
           intro: 'A small island nation\u2019s flood exposure had never been pulled into a single navigable picture. Decision-makers needed to see risk at neighborhood scale, not masked by national averages.',
-          problem: 'S\u00e3o Tom\u00e9 and Pr\u00edncipe faces a trifecta of compounding threats: shifting climate conditions, economic fragility, and escalating urbanization. With projections indicating a 30cm sea-level rise and a 20% increase in intense rainfall by 2050, the country required a rigorous method to quantify and communicate spatial flood hazards. The primary challenge was the total absence of detailed, publicly available quantitative datasets focusing on national-scale flood risks, which severely hampered strategic urban planning and community climate adaptation efforts.',
+          problem: 'S\u00e3o Tom\u00e9 and Pr\u00edncipe had no detailed, public flood risk data at national scale, despite projections of worsening sea-level rise and rainfall by 2050.',
           approach: 'The real finding only becomes visible at the right scale. A national average smooths away the insight that most risk concentrates in a handful of low-lying neighborhoods. The interactive map lets a reader zoom from the whole archipelago to a single street without losing the thread between local detail and national context. We moved beyond traditional siloed assessments by simultaneously examining coastal flooding (tide, surge, and wave setup) and rainfall-related flooding (pluvial/fluvial), mapping present-day (2020) and future climate projections (2050 and 2080) under medium-to-high emissions scenarios.',
           outcome: 'The first publicly navigable flood risk visualization for S\u00e3o Tom\u00e9 and Pr\u00edncipe, surfacing high-risk neighborhoods invisible in aggregate statistics. By clearly delineating hotspots where coastal and inland flooding converge, the project facilitates emergency response planning and prioritizes resource allocation for climate risk mitigation.',
           technical: 'ArcGIS StoryMaps, QGIS, Mapbox, Figma, Datawrapper.',
@@ -2570,7 +2593,7 @@
           deliveryDate: '2024',
           title: 'Economic Mobility Funding Dashboard',
           intro: 'Trillions in federal spending and billions in philanthropic grants flow toward economic mobility in the US each year \u2014 but which of the 28 life experiences that drive lifetime income actually gets funded, and where are the gaps?',
-          problem: 'Annually, trillions of dollars from the federal government and philanthropic institutions flow into systems meant to support economic mobility in the United States. However, these complex funding streams are often opaque, making it difficult for stakeholders to understand where capital is concentrated and where critical gaps exist. The challenge was to architect a data visualization tool capable of parsing massive financial datasets \u2014 totaling over $6 trillion in federal and $8.3 billion in philanthropic funding \u2014 without overwhelming the end user.',
+          problem: 'Trillions in federal spending and billions in philanthropic grants flow toward US economic mobility each year, but the funding streams were too opaque to show stakeholders where capital concentrates and where the gaps are.',
           approach: 'The hardest design challenge wasn\u2019t displaying the numbers \u2014 it was what to do when 60% of all funding flows to three entitlement programs, making everything else invisible at scale. We isolated mandatory spending to reveal a completely different picture of discretionary funding priorities underneath. We structured the platform into three primary domains \u2014 life experiences, public perspectives, and funding trends \u2014 emphasizing clean typography and interactive charts that guide the user from macroeconomic overviews down to granular philanthropic grant data.',
           outcome: 'A publicly accessible platform helping funders identify the largest gaps between current investment levels and documented mobility impact. It serves as an essential intelligence tool for private companies, non-profits, and policy-makers to uncover funding disparities \u2014 such as the underfunding of career progression and social capital relative to basic needs.',
           technical: 'd3.js, Node.js, Mapbox, Flourish, Figma.',
@@ -2588,7 +2611,7 @@
           deliveryDate: '2023',
           title: 'Power Scorecard',
           intro: 'How do you measure the conditions for economic and political power across all 50 US states \u2014 and make the results usable for advocacy, not just readable?',
-          problem: 'Understanding the deep connection between economic security and political power requires looking at diverse, disconnected indicators across all 50 states. D\u0113mos needed a way to test and visually prove their core theory: that economic and political power are inextricably linked. The challenge was aggregating disparate, publicly available datasets into a cohesive, standardized framework that could measure economic mobility, civic vitality, and democratic engagement while accurately reflecting the realities of marginalized communities.',
+          problem: 'D\u0113mos needed to prove that economic and political power are inextricably linked across all 50 states, using disparate public datasets that had never been aggregated into one standardized framework.',
           approach: 'The dashboard needed to work at two levels simultaneously: letting a policy professional drill into state-level scores, and letting a general reader grasp the headline finding without touching the methodology. The interactive map and ranked table serve each audience independently. Working alongside Camber Collective, we developed a 120-point ranking rubric that translates complex civic and economic data into clear, comparative visual evidence, letting users toggle between high-level heat maps and individual state scorecards.',
           outcome: 'A living data framework tracking 120-point aggregate conditions for economic security, mobility, civic vitality, and democratic participation across all 50 states. By visually exposing how even the highest-performing states fall short of optimal conditions, the platform equips grassroots organizations and policy advocates with the intelligence needed to fight for equitable power distribution.',
           technical: 'd3.js, QGIS, Mapbox, Node.js, Figma.',
@@ -2606,7 +2629,7 @@
           deliveryDate: '2024',
           title: 'Harvesting Conflict — Ukraine',
           intro: 'Russia\u2019s systematic destruction of Ukraine\u2019s agricultural infrastructure constitutes a war crime \u2014 but proving it requires geospatial evidence that holds up in international legal proceedings.',
-          problem: 'In the context of the conflict in Ukraine, the systemic deprivation of objects indispensable to civilian survival and the broader weaponization of food present immense humanitarian and geopolitical crises. The challenge was to responsibly and accurately visualize highly sensitive conflict data, translating raw intelligence into a compelling narrative that exposed these violations to international human rights organizations and supply chain watchdogs.',
+          problem: 'Russia\u2019s systematic destruction of Ukraine\u2019s agricultural infrastructure needed to be visualized responsibly enough to hold up as evidence for international human rights and supply chain accountability efforts.',
           approach: 'This needed to hold up as evidence, not just communicate well. Every data point traces back to a cited source, and the cartographic choices deliberately avoid anything that could be read as editorializing \u2014 no alarmist color ramps, no dramatized iconography. The restraint is the point. We used high-precision digital cartography to map the timeline and spatial footprint of resource deprivation, focusing on the intersection of agricultural supply chains and civilian infrastructure.',
           outcome: 'A geospatial accountability record of Russia\u2019s deprivation of civilian survival infrastructure, developed for international legal accountability efforts. The resulting story map provides supply chain organizations, humanitarian responders, and geopolitical foresight teams with a clear, irrefutable visual record of the conflict\u2019s agricultural toll.',
           technical: 'ArcGIS StoryMaps, Shorthand, QGIS, Mapbox, Figma.',
@@ -2624,7 +2647,7 @@
           deliveryDate: '2022',
           title: 'Ripe for Disruption — Climate Change and the Future of the Wine Industry',
           intro: 'Climate change is quietly rewriting the global wine map, but the data was scattered, highly technical, and split across two very different audiences with no common entry point.',
-          problem: 'This project reframes agricultural workers \u2014 specifically winemakers \u2014 as some of the world\u2019s most seasoned climate scientists. The data on extreme-weather events and their cascading impact on wine production geography was scattered, highly technical, and split across two very different audiences with no common entry point: industry professionals tracking global shifts, and consumers wondering about a specific bottle in their cellar.',
+          problem: 'The data behind this reframing of winemakers as climate scientists was scattered and technical, split across industry professionals tracking global shifts and consumers curious about a specific bottle in their cellar.',
           approach: 'Two audiences needed the same underlying data to answer opposite questions: where is the industry heading globally, and which bottle in my cellar should I worry about personally. A timeline slider let both questions share one dataset instead of forcing a choice between a policy brief and a wine blog. The approach blends historical agricultural techniques with modern climate data, highlighting how centuries of localized knowledge can inform contemporary environmental services.',
           outcome: 'A Parsons MSc Data Visualization thesis examining two extreme-weather events and their cascading impact on wine production geography, using case studies from California and Bordeaux. The repository serves as a bridge between academic climate research, sustainable agricultural practices, and actionable data storytelling for the private sustainability sector.',
           technical: 'Figma, Node.js, QGIS, Web Design Frameworks.',
