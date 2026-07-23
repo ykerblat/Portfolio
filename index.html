@@ -292,48 +292,6 @@
   .topo-bg{ position:absolute; top:-110px; right:-260px; width:1040px; height:820px; z-index:1; opacity:0.95; }
   .topo-bg path{ fill:none; stroke-width:2.1; transform-box:fill-box; transform-origin:center; }
 
-  /* Soft section washes — same radial-gradient technique as the body's base
-     texture, just recolored per section, so alternating sections read as
-     distinct moods rather than flat color blocks. */
-  .section-tint-teal{
-    background:
-      radial-gradient(ellipse 900px 500px at 15% 0%, rgba(31,92,86,0.06), transparent 60%),
-      radial-gradient(ellipse 800px 600px at 100% 100%, rgba(95,163,154,0.05), transparent 55%),
-      var(--color-surface);
-  }
-  .section-tint-sienna{
-    background:
-      radial-gradient(ellipse 900px 500px at 90% 0%, rgba(139,94,60,0.07), transparent 60%),
-      radial-gradient(ellipse 800px 600px at 5% 100%, rgba(188,75,38,0.04), transparent 55%),
-      var(--color-surface);
-  }
-  [data-theme="dark"] .section-tint-teal{
-    background:
-      radial-gradient(ellipse 900px 500px at 15% 0%, rgba(61,219,201,0.05), transparent 60%),
-      radial-gradient(ellipse 800px 600px at 100% 100%, rgba(95,163,154,0.04), transparent 55%),
-      var(--color-surface);
-  }
-  [data-theme="dark"] .section-tint-sienna{
-    background:
-      radial-gradient(ellipse 900px 500px at 90% 0%, rgba(193,154,75,0.06), transparent 60%),
-      radial-gradient(ellipse 800px 600px at 5% 100%, rgba(188,75,38,0.05), transparent 55%),
-      var(--color-surface);
-  }
-  @media (prefers-color-scheme: dark){
-    html:not([data-theme="light"]) .section-tint-teal{
-      background:
-        radial-gradient(ellipse 900px 500px at 15% 0%, rgba(61,219,201,0.05), transparent 60%),
-        radial-gradient(ellipse 800px 600px at 100% 100%, rgba(95,163,154,0.04), transparent 55%),
-        var(--color-surface);
-    }
-    html:not([data-theme="light"]) .section-tint-sienna{
-      background:
-        radial-gradient(ellipse 900px 500px at 90% 0%, rgba(193,154,75,0.06), transparent 60%),
-        radial-gradient(ellipse 800px 600px at 5% 100%, rgba(188,75,38,0.05), transparent 55%),
-        var(--color-surface);
-    }
-  }
-
   /* services */
   .outcomes{ padding:64px 0; }
   .outcomes-row{
@@ -588,12 +546,49 @@
 
   /* pull-quote — clean and conventional: paper background, a thin
      accent rule carrying the emphasis instead of a full-bleed block */
-  .pullquote{ background:var(--color-surface); padding:96px 0; }
-  .pullquote .wrap{ position:relative; border-left:3px solid var(--contour); padding-left:40px; }
-  .pullquote .wrap::before{
-    content:'\201C'; position:absolute; top:-64px; left:8px; z-index:0;
+  /* Pullquote — the studio's philosophy statement gets more visual
+     presence than a plain block of italic type: a set of concentric
+     contour rings breathes gently behind it (same slow-pulse language as
+     the "Our Philosophy" lens emblem elsewhere on the page, scaled up),
+     and the giant opening quote mark tracks the cursor with a subtle
+     parallax tilt — driven by a CSS custom property (--mx/--my) set from
+     mousemove, so the effect is pure CSS beyond that one JS listener.
+     Padding is tightened from 96px to 72px vertically since the rings
+     now do visual work that whitespace was doing before. */
+  .pullquote{
+    position:relative; overflow:hidden;
+    background:var(--color-surface); padding:72px 0;
+  }
+  .pullquote-rings{
+    position:absolute; inset:0; z-index:0; pointer-events:none;
+    display:flex; align-items:center; justify-content:center;
+    opacity:0;
+    transition:opacity 0.8s ease;
+  }
+  .pullquote.is-revealed .pullquote-rings{ opacity:1; }
+  .pullquote-rings svg{ width:min(70vw, 640px); height:min(70vw, 640px); overflow:visible; }
+  .pq-ring{
+    fill:none; stroke:var(--contour); stroke-width:1;
+    transform-origin:200px 200px;
+    animation:pq-breathe 6s ease-in-out infinite;
+  }
+  .pq-ring:nth-child(1){ opacity:0.16; animation-delay:0s; }
+  .pq-ring:nth-child(2){ opacity:0.11; animation-delay:0.8s; stroke:var(--p-teal-300); }
+  .pq-ring:nth-child(3){ opacity:0.07; animation-delay:1.6s; }
+  @keyframes pq-breathe{
+    0%, 100%{ transform:scale(0.96); }
+    50%{ transform:scale(1.04); }
+  }
+  .pullquote-wrap{
+    position:relative; z-index:1;
+    border-left:3px solid var(--contour); padding-left:40px;
+  }
+  .pullquote-mark{
+    position:absolute; top:-72px; left:8px; z-index:0;
     font-family:var(--font-display); font-size:180px; line-height:1; font-weight:600;
-    color:var(--contour); opacity:0.12; pointer-events:none; user-select:none;
+    color:var(--contour); opacity:0.14; pointer-events:none; user-select:none;
+    transform:translate(calc(var(--mx, 0) * 10px), calc(var(--my, 0) * 8px));
+    transition:transform 0.3s cubic-bezier(0.16,1,0.3,1);
   }
   .pullquote blockquote{
     position:relative; z-index:1;
@@ -604,6 +599,10 @@
     position:relative; z-index:1;
     display:block; margin-top:24px; font-family:var(--font-mono); font-style:normal;
     font-size:12px; text-transform:uppercase; letter-spacing:0.08em; color:var(--color-text-secondary);
+  }
+  @media (prefers-reduced-motion: reduce){
+    .pq-ring{ animation:none; }
+    .pullquote-mark{ transition:none; transform:none; }
   }
 
   /* clients */
@@ -816,7 +815,7 @@
   .theme-toggle:focus-visible{ outline:2px solid var(--color-focus-ring); outline-offset:2px; }
 
   /* studio / philosophy */
-  .studio{ padding:120px 0 84px; background:var(--color-surface-cool); }
+  .studio{ padding:120px 0 84px; background:var(--color-surface-raised); }
   .studio-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:40px; }
   .studio-emblem{ width:56px; height:56px; margin-bottom:20px; }
   .studio-emblem svg{ width:100%; height:100%; overflow:visible; }
@@ -911,8 +910,9 @@
     .services h2, .process h2, .work h2{ font-size:32px; }
     .contact-box h2{ font-size:28px; }
     .card h3, .studio-grid h3{ font-size:23px; }
-    .pullquote{ padding:64px 0; }
-    .pullquote .wrap::before{ font-size:110px; top:-38px; left:2px; }
+    .pullquote{ padding:56px 0; }
+    .pullquote-mark{ font-size:110px; top:-38px; left:2px; }
+    .pullquote-rings svg{ width:88vw; height:88vw; }
     .pullquote blockquote{ font-size:28px; }
     .topo-bg{ opacity:0.5; width:680px; height:540px; right:-180px; top:-60px; }
 
@@ -1564,7 +1564,7 @@
           </svg>
             <div class="hotspot"><button class="hotspot-btn" type="button" aria-label="View outcome"><svg viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><div class="hotspot-panel"><p>The first publicly navigable flood risk visualization for S&atilde;o Tom&eacute; and Pr&iacute;ncipe, surfacing high-risk neighborhoods invisible in aggregate statistics.</p></div></div>
           </div>
-          <p class="work-kind client">Client — World Bank / GFDRR</p>
+          <p class="work-kind client">Recipient — World Bank / WACA / GFDRR</p>
           <h4>Head Above Water — São Tomé Flood Resilience</h4>
           <p class="work-scope">ArcGIS StoryMap · World Bank / WACA / GFDRR</p>
         </a>
@@ -1582,7 +1582,7 @@
           </svg>
             <div class="hotspot"><button class="hotspot-btn" type="button" aria-label="View outcome"><svg viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><div class="hotspot-panel"><p>A publicly accessible platform helping funders identify the largest gaps between current investment levels and documented mobility impact.</p></div></div>
           </div>
-          <p class="work-kind client">Client — Gates Foundation / Camber Collective</p>
+          <p class="work-kind client">Recipient — Gates Foundation / Camber Collective</p>
           <h4>Economic Mobility Funding Dashboard</h4>
           <p class="work-scope">Interactive dashboard · funding flows</p>
         </a>
@@ -1604,7 +1604,7 @@
           </svg>
             <div class="hotspot"><button class="hotspot-btn" type="button" aria-label="View outcome"><svg viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><div class="hotspot-panel"><p>A living data framework tracking 120-point aggregate conditions across all 50 US states, built for advocacy as much as analysis.</p></div></div>
           </div>
-          <p class="work-kind client">Client — Dēmos / Camber Collective</p>
+          <p class="work-kind client">Recipient — Dēmos / Camber Collective</p>
           <h4>Power Scorecard</h4>
           <p class="work-scope">Interactive data framework · 50 states</p>
         </a>
@@ -1618,15 +1618,15 @@
             <circle cx="40" cy="36" r="2.4" fill="var(--flag)"/>
             <circle cx="60" cy="46" r="2.4" fill="var(--flag)"/>
           </svg>
-            <div class="hotspot"><button class="hotspot-btn" type="button" aria-label="View outcome"><svg viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><div class="hotspot-panel"><p>A geospatial accountability record of Russia &amp; deprivation of civilian survival infrastructure, developed for international legal accountability efforts spearheaded by the Hague International Court of Justice.</p></div></div>
+            <div class="hotspot"><button class="hotspot-btn" type="button" aria-label="View outcome"><svg viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><div class="hotspot-panel"><p>A geospatial accountability record of Russia&rsquo;s deprivation of civilian survival infrastructure, developed for international legal accountability efforts spearheaded by the Hague International Court of Justice.</p></div></div>
           </div>
-          <p class="work-kind client">Client — Global Rights Compliance</p>
+          <p class="work-kind client">Recipient — Global Rights Compliance</p>
           <h4>Harvesting Conflict — Ukraine</h4>
           <p class="work-scope">ArcGIS StoryMap · accountability &amp; IHL</p>
         </a>
         <a href="https://www.newschool.edu/parsons/profile/yann-kerblat/" target="_blank" rel="noopener noreferrer" class="work-item" data-case="wine-climate">
           <div class="work-thumb">
-            <img class="thumb-img" src="img/work/wine-climate.gif" alt="" loading="lazy" onerror="this.remove();">
+            <img class="thumb-img" src="img/work/wine-climate.jpg" alt="" loading="lazy" onerror="this.remove();">
             <div class="work-summit" aria-hidden="true"><i></i><b class="r1"></b><b class="r2"></b></div>
             <svg viewBox="0 0 100 75" class="thumb-art" aria-hidden="true" preserveAspectRatio="none">
             <line x1="12" y1="62" x2="92" y2="62" stroke="var(--line-strong)" stroke-width="1"/>
@@ -1742,7 +1742,7 @@
     </div>
   </section>
 
-  <section class="services section-tint-sienna" id="services">
+  <section class="services" id="services">
     <div class="wrap">
       <h2 class="section-heading-wrap"><span class="heading-crosshair" aria-hidden="true"></span>Our services<span class="heading-hairline" aria-hidden="true"></span></h2>
       <p class="lede">Every engagement starts with one question: what does your audience need to walk away knowing? The format follows from there. <span style="color:var(--slate)">(hover a card)</span></p>
@@ -1855,7 +1855,7 @@
     </div>
   </section>
 
-  <section class="process section-tint-teal process-section">
+  <section class="process process-section">
     <div class="wrap">
       <h2 class="section-heading-wrap"><span class="heading-crosshair" aria-hidden="true"></span>How we work<span class="heading-hairline" aria-hidden="true"></span></h2>
       <div class="process-row">
@@ -1960,7 +1960,7 @@
           <svg viewBox="0 0 56 56"><circle cx="28" cy="28" r="24" fill="none" stroke="var(--contour)" stroke-width="1.4" opacity="0.35"/><g class="emblem-spin"><line x1="28" y1="10" x2="28" y2="18" stroke="var(--contour)" stroke-width="2" stroke-linecap="round"/><line x1="28" y1="38" x2="28" y2="46" stroke="var(--p-teal-300)" stroke-width="2" stroke-linecap="round"/></g><circle cx="28" cy="28" r="4" fill="var(--contour)"/></svg>
           </div>
         <h3>The Studio</h3>
-        <p>Contour Lines is led by <strong>Yann Kerblat</strong>, a Paris-based information designer who spent over 15 years as a Disaster &amp; Climate Resilience Analyst for the World Bank and the UN before founding the studio. He holds a Master&rsquo;s in Data Visualization from Parsons School of Design and works in English and French. The studio works at the intersection of data, policy, and storytelling — helping organizations turn tangled, high-stakes data into interactive narratives that drive real-world decisions.</p>
+        <p>Contour Lines is led by <strong>Yann Kerblat</strong>, a Paris-based information designer with over 15 years of experience, including seven years as a Disaster &amp; Climate Resilience Analyst for the World Bank and the UN before founding the studio. He holds a Master&rsquo;s in Data Visualization from Parsons School of Design and works in English and French. The studio works at the intersection of data, policy, and storytelling — helping organizations turn tangled, high-stakes data into interactive narratives that drive real-world decisions.</p>
       </div>
       <div>
         <div class="studio-emblem studio-emblem-network" aria-hidden="true">
@@ -2057,7 +2057,7 @@
         <div class="colophon-section signature-block">
           <p class="signature-name">Yann Kerblat</p>
           <p class="signature-role">Founder, Contour Lines</p>
-          <p class="signature-tagline">Data Visualization &times; Information Design Studio</p>
+          <p class="signature-tagline">Data Visualization &times; Digital Cartography Studio</p>
           <div class="signature-links">
             <a href="https://contourlines.studio/" class="signature-link">contourlines.studio</a>
             <a href="https://www.linkedin.com/in/yann-kerblat/" target="_blank" rel="noopener noreferrer" class="signature-link signature-link-icon" aria-label="Yann Kerblat on LinkedIn">
@@ -2070,8 +2070,16 @@
     </div>
   </section>
 
-  <section class="pullquote">
-    <div class="wrap">
+  <section class="pullquote" id="pullquote-section">
+    <div class="pullquote-rings" aria-hidden="true">
+      <svg viewBox="0 0 400 400">
+        <circle class="pq-ring" cx="200" cy="200" r="70"/>
+        <circle class="pq-ring" cx="200" cy="200" r="120"/>
+        <circle class="pq-ring" cx="200" cy="200" r="170"/>
+      </svg>
+    </div>
+    <div class="wrap pullquote-wrap">
+      <span class="pullquote-mark" id="pullquote-mark" aria-hidden="true">&ldquo;</span>
       <blockquote>Design isn&rsquo;t decoration for evidence. It&rsquo;s what gives evidence enough clarity that it can&rsquo;t be ignored.</blockquote>
       <cite>— The studio philosophy</cite>
     </div>
@@ -2661,7 +2669,7 @@
         'power-agenda': {
           kind: 'client',
           client: 'D\u0113mos / Camber Collective',
-          deliveryDate: '2024',
+          deliveryDate: '2023',
           title: 'Power Scorecard',
           intro: 'How do you measure the conditions for economic and political power across all 50 US states \u2014 and make the results usable for advocacy, not just readable?',
           problem: 'D\u0113mos needed to prove that economic and political power are inextricably linked across all 50 states, using disparate public datasets that had never been aggregated into one standardized framework.',
@@ -2679,7 +2687,7 @@
         'harvesting-conflict': {
           kind: 'client',
           client: 'Global Rights Compliance',
-          deliveryDate: '2025',
+          deliveryDate: '2024',
           title: 'Harvesting Conflict — Ukraine',
           intro: 'Russia\u2019s systematic destruction of Ukraine\u2019s agricultural infrastructure constitutes a war crime \u2014 but proving it requires geospatial evidence that holds up in international legal proceedings.',
           problem: 'Russia\u2019s systematic destruction of Ukraine\u2019s agricultural infrastructure needed to be visualized responsibly enough to hold up as evidence for international human rights and supply chain accountability efforts.',
@@ -3111,6 +3119,36 @@
           }
         }, { threshold: 0.1 });
         routeIO.observe(processSection);
+      }
+
+      // --- 3b. Pullquote — contour rings fade in once on scroll, and the
+      // giant quote mark tracks the cursor with a subtle parallax tilt
+      // (skipped entirely under prefers-reduced-motion, matching the
+      // ring animation's own reduced-motion CSS fallback). ---
+      var pullquoteSection = document.querySelector('#pullquote-section');
+      if (pullquoteSection){
+        var pqIO = new IntersectionObserver(function(entries){
+          if (entries[0].isIntersecting){
+            entries[0].target.classList.add('is-revealed');
+            pqIO.disconnect();
+          }
+        }, { threshold: 0.15 });
+        pqIO.observe(pullquoteSection);
+
+        if (!reduceMotion){
+          var pqMark = document.getElementById('pullquote-mark');
+          pullquoteSection.addEventListener('mousemove', function(e){
+            var rect = pullquoteSection.getBoundingClientRect();
+            var mx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+            var my = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+            pullquoteSection.style.setProperty('--mx', mx.toFixed(3));
+            pullquoteSection.style.setProperty('--my', my.toFixed(3));
+          });
+          pullquoteSection.addEventListener('mouseleave', function(){
+            pullquoteSection.style.setProperty('--mx', 0);
+            pullquoteSection.style.setProperty('--my', 0);
+          });
+        }
       }
 
       // --- 4. Transmission blink (fires once after status resolves) ---
